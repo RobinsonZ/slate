@@ -1,6 +1,6 @@
 # slate
 
-An Electron application with React and TypeScript
+A flexible document management interface for educators and learners.
 
 ## Recommended IDE Setup
 
