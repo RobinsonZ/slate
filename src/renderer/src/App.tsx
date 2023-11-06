@@ -1,162 +1,144 @@
-import Versions from "./components/Versions";
-import icons from "./assets/icons.svg";
-import { useEffect } from "react";
+import { DragDropContext, OnDragEndResponder } from "react-beautiful-dnd";
+import { useElectronStore } from "./util/useElectronStore";
+import SlateColumn from "./components/SlateColumn";
 
 function App(): JSX.Element {
-  useEffect(() => {
-    // call a "server API" (defined at bottom of main.js right now)
-    window.electron.ipcRenderer.invoke("ping", "hello").then(console.log);
-  }, []);
+  const [data, setData] = useElectronStore("cards");
+
+  // if (!data) {
+  //   setData([
+  //     {
+  //       name: "english",
+  //       dayData: [
+  //         {
+  //           date: "Sept 18",
+  //           cards: [
+  //             {
+  //               id: "aaaaa",
+  //               fileName: "fooo1",
+  //               fileType: "docx",
+  //               tags: [],
+  //               index: 0,
+  //             },
+  //             {
+  //               id: "aaaaa2",
+  //               fileName: "fooo2",
+  //               fileType: "pdf",
+  //               tags: [],
+  //               index: 1,
+  //             },
+  //           ],
+  //         },
+  //       ],
+  //     },
+  //   ]);
+  // }
+
+  // copied from https://codesandbox.io/s/react-beautiful-dnd-experiment-4k722
+  // which I found on https://stackoverflow.com/a/60092971/13644774
+  const onDragEnd: OnDragEndResponder = (val) => {
+    const { draggableId, source, destination } = val;
+    const dataCopy = JSON.parse(JSON.stringify(data)); // stupid deep copy
+    // first find the source column, then the day: split the ID by "&" and search
+    const [sourceColumnId, sourceDate] = source.droppableId.split("&");
+    const [sourceColumn] = dataCopy.filter(
+      (column) => column.name === sourceColumnId
+    );
+    // then find the date
+    const [sourceDay] = sourceColumn.dayData.filter(
+      (day) => day.date === sourceDate
+    );
+    console.log(sourceColumn, sourceDay)
+    // same with destination column
+    const [destColumnId, destDate] = destination?.droppableId?.split("&") || [
+      null,
+      null,
+    ];
+    // Destination might be `null`: when a task is
+    // dropped outside any drop area. In this case the
+    // task reamins in the same column so `destination` is same as `source`
+    if (destination != null) {
+        const [destinationColumn] = dataCopy.filter(
+          (column) => column.name === destColumnId
+        );
+        const [destinationDay] = destinationColumn.dayData.filter(
+          (day) => day.date === destDate
+        );
+        console.log(destinationColumn, destinationDay)
+        // We save the task we are moving
+        const [movingTask] = sourceDay.cards.filter(
+          (c) => c.id === draggableId
+        );
+        console.log(movingTask)
+
+        console.log(source, destination)
+        const newSourceCards = sourceDay.cards.toSpliced(source.index, 1);
+        const newDestinationCards = (source.droppableId === destination.droppableId ? newSourceCards : destinationDay.cards).toSpliced(
+          destination.index,
+          0,
+          movingTask
+        );
+        console.log(dataCopy);
+        sourceDay.cards = newSourceCards;
+        destinationDay.cards = newDestinationCards;
+        console.log(dataCopy);
+      // Mapping over the task lists means that you can easily
+      // add new columns
+      // const newTaskList = dataCopy.map((column) => {
+      //   if (column.name === sourceColumnId || column.name === destColumnId) {
+      //     return {
+      //       name: column.name,
+      //       dayData: column.dayData.map((day) => {
+      //         if (day.date === sourceDate) {
+      //           return {
+      //             date: day.date,
+      //             cards: newSourceCards
+      //           }
+      //         }
+      //         if (day.date === destDate) {
+      //           return {
+      //             date: day.date,
+      //             cards: newDestinationCards
+      //           }
+      //         }
+      //         return day;
+      //       }),
+      //     };
+      //   }
+      //   return column;
+      // });
+    }
+    setData(dataCopy);
+  };
 
   return (
-    <div className="container">
-      <Versions></Versions>
-
-      <svg className="hero-logo" viewBox="0 0 900 300">
-        <use xlinkHref={`${icons}#electron`} />
-      </svg>
-      <h2 className="hero-text">
-        You{"'"}ve successfully created an Electron project with React and
-        TypeScript
-      </h2>
-      <p className="hero-tagline">
-        Please try pressing <code>F12</code> to open the devTool
-      </p>
-
-      <div className="links">
-        <div className="link-item">
-          <a
-            target="_blank"
-            href="https://electron-vite.org"
-            rel="noopener noreferrer"
+    /* tailwind doesn't pick up classes in the index.html for some reason so I'm using bg-gray-500 here too,
+    so that it'll get compiled into the built css */
+    <div className="bg-gray-500">
+      <header className="bg-white shadow">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <h1
+            className="text-2xl font-bold tracking-tight text-gray-900"
+            onClick={(_e) => setData("spam")}
           >
-            Documentation
-          </a>
+            TimeFinder
+          </h1>
         </div>
-        <div className="link-item link-dot">•</div>
-        <div className="link-item">
-          <a
-            target="_blank"
-            href="https://github.com/alex8088/electron-vite"
-            rel="noopener noreferrer"
-          >
-            Getting Help
-          </a>
+      </header>
+      <main className="min-h-full">
+        <div className="mx-auto py-6 sm:px-6 lg:px-8">
+          <DragDropContext onDragEnd={onDragEnd}>
+            {data.map((colData) => (
+              <SlateColumn
+                name="English"
+                id={colData.name}
+                key={colData.name}
+                dayData={colData.dayData}
+              />
+            ))}
+          </DragDropContext>
         </div>
-        <div className="link-item link-dot">•</div>
-        <div className="link-item">
-          <a
-            target="_blank"
-            href="https://github.com/alex8088/quick-start/tree/master/packages/create-electron"
-            rel="noopener noreferrer"
-          >
-            create-electron
-          </a>
-        </div>
-      </div>
-
-      <div className="features">
-        <div className="feature-item">
-          <article>
-            <h2 className="title">Configuring</h2>
-            <p className="detail">
-              Config with <span>electron.vite.config.ts</span> and refer to the{" "}
-              <a
-                target="_blank"
-                href="https://electron-vite.org/config"
-                rel="noopener noreferrer"
-              >
-                config guide
-              </a>
-              .
-            </p>
-          </article>
-        </div>
-        <div className="feature-item">
-          <article>
-            <h2 className="title">HMR</h2>
-            <p className="detail">
-              Edit <span>src/renderer</span> files to test HMR. See{" "}
-              <a
-                target="_blank"
-                href="https://electron-vite.org/guide/hmr.html"
-                rel="noopener noreferrer"
-              >
-                docs
-              </a>
-              .
-            </p>
-          </article>
-        </div>
-        <div className="feature-item">
-          <article>
-            <h2 className="title">Hot Reloading</h2>
-            <p className="detail">
-              Run{" "}
-              <span>
-                {"'"}electron-vite dev --watch{"'"}
-              </span>{" "}
-              to enable. See{" "}
-              <a
-                target="_blank"
-                href="https://electron-vite.org/guide/hot-reloading.html"
-                rel="noopener noreferrer"
-              >
-                docs
-              </a>
-              .
-            </p>
-          </article>
-        </div>
-        <div className="feature-item">
-          <article>
-            <h2 className="title">Debugging</h2>
-            <p className="detail">
-              Check out <span>.vscode/launch.json</span>. See{" "}
-              <a
-                target="_blank"
-                href="https://electron-vite.org/guide/debugging.html"
-                rel="noopener noreferrer"
-              >
-                docs
-              </a>
-              .
-            </p>
-          </article>
-        </div>
-        <div className="feature-item">
-          <article>
-            <h2 className="title">Source Code Protection</h2>
-            <p className="detail">
-              Supported via built-in plugin <span>bytecodePlugin</span>. See{" "}
-              <a
-                target="_blank"
-                href="https://electron-vite.org/guide/source-code-protection.html"
-                rel="noopener noreferrer"
-              >
-                docs
-              </a>
-              .
-            </p>
-          </article>
-        </div>
-        <div className="feature-item">
-          <article>
-            <h2 className="title">Packaging</h2>
-            <p className="detail">
-              Use{" "}
-              <a
-                target="_blank"
-                href="https://www.electron.build"
-                rel="noopener noreferrer"
-              >
-                electron-builder
-              </a>{" "}
-              and pre-configured to pack your app.
-            </p>
-          </article>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }

@@ -1,7 +1,17 @@
 import { app, shell, BrowserWindow, ipcMain } from "electron";
 import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
+import Store from 'electron-store'
 import icon from "../../resources/icon.png?asset";
+
+const store = new Store();
+
+ipcMain.on('electron-store-get', async (event, val) => {
+  event.returnValue = store.get(val);
+});
+ipcMain.on('electron-store-set', async (_event, key, val) => {
+  store.set(key, val);
+});
 
 function createWindow(): void {
   // Create the browser window.
@@ -25,6 +35,12 @@ function createWindow(): void {
     shell.openExternal(details.url);
     return { action: "deny" };
   });
+
+  store.onDidAnyChange((newValue, oldValue) => {
+    mainWindow.webContents.send("electron-store-change", newValue, oldValue)
+  })
+
+  store.openInEditor()
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
