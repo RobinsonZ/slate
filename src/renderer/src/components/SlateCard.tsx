@@ -17,7 +17,7 @@ export default function SlateCard(props: SlateCardData & {index: number}) {
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
-          className="bg-blue-500 rounded p-1 mb-2"
+          className={"rounded p-1 mb-2 " + (snapshot.isDragging ? "bg-blue-700" : "bg-blue-500")}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
