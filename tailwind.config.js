@@ -4,7 +4,13 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        cardPdf: '#f8f1bb',
+        cardDocx: '#dcf4ca',
+        cardDefault: '#bdeef1',
+      },
+    },
   },
   plugins: [],
 }
