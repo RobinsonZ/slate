@@ -19,7 +19,7 @@ export default function fakeCardData() {
           type: "file",
           id: "a2",
           fileName: "a2",
-          fileType: "docx",
+          fileType: "pptx",
           tags: [],
         },
         {
