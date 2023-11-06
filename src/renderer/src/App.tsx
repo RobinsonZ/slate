@@ -79,7 +79,7 @@ function App(): JSX.Element {
         {/* no overflow-x-scroll as this needs to be handled by the browser, see https://github.com/atlassian/react-beautiful-dnd/issues/131#issuecomment-1144736558*/}
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <h1
-            className="text-2xl font-bold tracking-tight text-gray-900"
+            className="text-2xl font-bold tracking-tight text-gray-900 font-title"
           >
             TimeFinder
             <button

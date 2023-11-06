@@ -10,6 +10,13 @@ module.exports = {
         cardDocx: '#dcf4ca',
         cardDefault: '#bdeef1',
       },
+      fontFamily: {
+        "title": ['Arvo', 'serif'],
+        "header": ['Arvo', 'serif'],
+        "subheader": ['Arvo', 'serif'],
+        "detail": ['Patrick Hand', 'sans'],
+        "label": ['Patrick Hand SC', 'sans'],
+      }
     },
   },
   plugins: [],

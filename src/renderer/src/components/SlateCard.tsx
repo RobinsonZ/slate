@@ -26,11 +26,11 @@ export default function SlateCard(props: SlateCardData & {index: number}) {
         >
 
           <div className="flex flex-col justify-between w-full h-full">
-            <p className="self-start">{fileName}</p>
+            <p className="self-start font-detail">{fileName}</p>
             {/* Spacer to push filetype to the bottom */}
             <div className="flex-grow"></div>
             {/* Align filetype label to the bottom-right */}
-            <div className="self-end rounded bg-black bg-opacity-50 text-white p-1">
+            <div className="self-end rounded bg-black bg-opacity-50 text-white p-1 font-label">
               <p>.{fileType}</p>
             </div>
           </div>
