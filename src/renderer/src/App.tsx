@@ -1,6 +1,7 @@
 import { DragDropContext, OnDragEndResponder } from "react-beautiful-dnd";
 import { useElectronStore } from "./util/useElectronStore";
 import SlateColumn from "./components/SlateColumn";
+import fakeCardData from "./util/fakeCardData";
 
 function App(): JSX.Element {
   const [data, setData] = useElectronStore("cards");
@@ -18,14 +19,12 @@ function App(): JSX.Element {
   //               fileName: "fooo1",
   //               fileType: "docx",
   //               tags: [],
-  //               index: 0,
   //             },
   //             {
   //               id: "aaaaa2",
   //               fileName: "fooo2",
   //               fileType: "pdf",
   //               tags: [],
-  //               index: 1,
   //             },
   //           ],
   //         },
@@ -40,73 +39,34 @@ function App(): JSX.Element {
     const { draggableId, source, destination } = val;
     const dataCopy = JSON.parse(JSON.stringify(data)); // stupid deep copy
     // first find the source column, then the day: split the ID by "&" and search
-    const [sourceColumnId, sourceDate] = source.droppableId.split("&");
+    // const [sourceColumnId] = source.droppableId
     const [sourceColumn] = dataCopy.filter(
-      (column) => column.name === sourceColumnId
+      (column) => column.name === source.droppableId
     );
-    // then find the date
-    const [sourceDay] = sourceColumn.dayData.filter(
-      (day) => day.date === sourceDate
-    );
-    console.log(sourceColumn, sourceDay)
     // same with destination column
-    const [destColumnId, destDate] = destination?.droppableId?.split("&") || [
-      null,
-      null,
-    ];
+
     // Destination might be `null`: when a task is
     // dropped outside any drop area. In this case the
     // task reamins in the same column so `destination` is same as `source`
     if (destination != null) {
-        const [destinationColumn] = dataCopy.filter(
-          (column) => column.name === destColumnId
-        );
-        const [destinationDay] = destinationColumn.dayData.filter(
-          (day) => day.date === destDate
-        );
-        console.log(destinationColumn, destinationDay)
-        // We save the task we are moving
-        const [movingTask] = sourceDay.cards.filter(
-          (c) => c.id === draggableId
-        );
-        console.log(movingTask)
+      const [destinationColumn] = dataCopy.filter(
+        (column) => column.name === destination.droppableId
+      );
 
-        console.log(source, destination)
-        const newSourceCards = sourceDay.cards.toSpliced(source.index, 1);
-        const newDestinationCards = (source.droppableId === destination.droppableId ? newSourceCards : destinationDay.cards).toSpliced(
-          destination.index,
-          0,
-          movingTask
-        );
-        console.log(dataCopy);
-        sourceDay.cards = newSourceCards;
-        destinationDay.cards = newDestinationCards;
-        console.log(dataCopy);
-      // Mapping over the task lists means that you can easily
-      // add new columns
-      // const newTaskList = dataCopy.map((column) => {
-      //   if (column.name === sourceColumnId || column.name === destColumnId) {
-      //     return {
-      //       name: column.name,
-      //       dayData: column.dayData.map((day) => {
-      //         if (day.date === sourceDate) {
-      //           return {
-      //             date: day.date,
-      //             cards: newSourceCards
-      //           }
-      //         }
-      //         if (day.date === destDate) {
-      //           return {
-      //             date: day.date,
-      //             cards: newDestinationCards
-      //           }
-      //         }
-      //         return day;
-      //       }),
-      //     };
-      //   }
-      //   return column;
-      // });
+      // We save the task we are moving
+      const [movingTask] = sourceColumn.cards.filter(
+        (c) => c.id === draggableId
+      );
+
+      const newSourceCards = sourceColumn.cards.toSpliced(source.index, 1);
+      const newDestinationCards = (
+        source.droppableId === destination.droppableId
+          ? newSourceCards
+          : destinationColumn.cards
+      ).toSpliced(destination.index, 0, movingTask);
+
+      sourceColumn.cards = newSourceCards;
+      destinationColumn.cards = newDestinationCards;
     }
     setData(dataCopy);
   };
@@ -115,27 +75,35 @@ function App(): JSX.Element {
     /* tailwind doesn't pick up classes in the index.html for some reason so I'm using bg-gray-500 here too,
     so that it'll get compiled into the built css */
     <div className="bg-gray-500">
-      <header className="bg-white shadow">
+      <header className="bg-white shadow fixed w-screen">
+        {/* no overflow-x-scroll as this needs to be handled by the browser, see https://github.com/atlassian/react-beautiful-dnd/issues/131#issuecomment-1144736558*/}
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <h1
             className="text-2xl font-bold tracking-tight text-gray-900"
-            onClick={(_e) => setData("spam")}
           >
             TimeFinder
+            <button
+              className="bg-blue-500 inline mx-2 p-1 rounded text-xl"
+              onClick={() => setData(fakeCardData())}
+            >
+              reset cards
+            </button>
           </h1>
         </div>
       </header>
-      <main className="min-h-full">
+      <main className="min-h-full absolute top-16">
         <div className="mx-auto py-6 sm:px-6 lg:px-8">
           <DragDropContext onDragEnd={onDragEnd}>
-            {data.map((colData) => (
-              <SlateColumn
-                name="English"
-                id={colData.name}
-                key={colData.name}
-                dayData={colData.dayData}
-              />
-            ))}
+            <div className="w-[200%] h-full columns-xs gap-4 flex items-start pb-16 overflow-y-hidden select-none">
+              {data?.map && data.map((colData) => (
+                <SlateColumn
+                  name={colData.name}
+                  id={colData.name}
+                  key={colData.name}
+                  items={colData.cards}
+                />
+              ))}
+            </div>
           </DragDropContext>
         </div>
       </main>

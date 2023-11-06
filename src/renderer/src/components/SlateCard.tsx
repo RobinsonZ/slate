@@ -5,12 +5,11 @@ export interface SlateCardData {
   fileName: string;
   fileType: "pdf" | "docx";
   tags: [string];
-  index: number;
 }
 
-export default function SlateCard(props: { data: SlateCardData }) {
+export default function SlateCard(props: SlateCardData & {index: number}) {
   const {
-    data: { id, fileName, fileType, tags, index },
+    id, fileName, fileType, tags, index
   } = props;
 
   return (
@@ -18,7 +17,7 @@ export default function SlateCard(props: { data: SlateCardData }) {
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
-          className="bg-blue-500 rounded p-1 m-1"
+          className="bg-blue-500 rounded p-1 mb-2"
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
