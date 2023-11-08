@@ -1,21 +1,8 @@
 import { Draggable, Droppable } from "react-beautiful-dnd";
-import SlateCard, { SlateCardData } from "./SlateCard";
+import SlateCard from "./SlateCard";
 
-interface SlateColumnProps {
-  name: string;
-  id: string;
-  items: [
-    | {
-        type: "day";
-        id: string;
-        day: string;
-      }
-    | ({ type: "file" } & SlateCardData),
-  ];
-}
-
-export default function SlateColumn(props: SlateColumnProps) {
-  const { name, id, items } = props;
+export default function SlateColumn(props: SlateColumn) {
+  const { name, id, cards } = props;
 
   let index = 0;
 
@@ -28,7 +15,7 @@ export default function SlateColumn(props: SlateColumnProps) {
           {(provided, snapshot) => (
             <div ref={provided.innerRef} {...provided.droppableProps}>
               <>
-                {items.map((item) => {
+                {cards.map((item) => {
                   if (item.type == "day") {
                     return (
                       <Draggable

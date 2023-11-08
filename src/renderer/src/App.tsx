@@ -4,7 +4,7 @@ import SlateColumn from "./components/SlateColumn";
 import fakeCardData from "./util/fakeCardData";
 
 function App(): JSX.Element {
-  const [data, setData] = useElectronStore("cards");
+  const [data, setData] = useElectronStore<FileDatabase>("cards");
 
   // if (!data) {
   //   setData([
@@ -37,10 +37,10 @@ function App(): JSX.Element {
   // which I found on https://stackoverflow.com/a/60092971/13644774
   const onDragEnd: OnDragEndResponder = (val) => {
     const { draggableId, source, destination } = val;
-    const dataCopy = JSON.parse(JSON.stringify(data)); // stupid deep copy
+    const dataCopy = JSON.parse(JSON.stringify(data)) as FileDatabase; // stupid deep copy
     // first find the source column, then the day: split the ID by "&" and search
     // const [sourceColumnId] = source.droppableId
-    const [sourceColumn] = dataCopy.filter(
+    const [sourceColumn] = dataCopy.columns.filter(
       (column) => column.name === source.droppableId
     );
     // same with destination column
@@ -49,7 +49,7 @@ function App(): JSX.Element {
     // dropped outside any drop area. In this case the
     // task reamins in the same column so `destination` is same as `source`
     if (destination != null) {
-      const [destinationColumn] = dataCopy.filter(
+      const [destinationColumn] = dataCopy.columns.filter(
         (column) => column.name === destination.droppableId
       );
 
@@ -95,12 +95,12 @@ function App(): JSX.Element {
         <div className="mx-auto py-6 sm:px-6 lg:px-8">
           <DragDropContext onDragEnd={onDragEnd}>
             <div className="w-[200%] h-full columns-xs gap-4 flex items-start pb-16 overflow-y-hidden select-none">
-              {data?.map && data.map((colData) => (
+              {data?.columns?.map && data?.columns.map((colData) => (
                 <SlateColumn
                   name={colData.name}
                   id={colData.name}
                   key={colData.name}
-                  items={colData.cards}
+                  cards={colData.cards}
                 />
               ))}
             </div>

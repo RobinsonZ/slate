@@ -1,13 +1,6 @@
 import { Draggable } from "react-beautiful-dnd";
 
-export interface SlateCardData {
-  id: string;
-  fileName: string;
-  fileType: "pdf" | "docx";
-  tags: [string];
-}
-
-export default function SlateCard(props: SlateCardData & {index: number}) {
+export default function SlateCard(props: SlateFile & {index: number}) {
   const {
     id, fileName, fileType, tags, index
   } = props;

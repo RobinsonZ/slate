@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 
-export function useElectronStore(key: string) {
-  const [value, setValue] = useState(window.electronStore.get(key));
+export function useElectronStore<T>(
+  key: string
+): [T, (newVal: SetStateAction<T>) => void] {
+  const [value, setValue] = useState<T>(window.electronStore.get(key));
   useEffect(() => {
     const callback = window.electronStore.onDidAnyChange(
       (_oldValue, newValue) => {
         if (newValue[key]) {
-          setValue(newValue[key]);
+          setValue(newValue[key] as T);
         }
       }
     );
@@ -17,7 +19,7 @@ export function useElectronStore(key: string) {
 
   return [
     value,
-    (newVal: any) => {
+    (newVal: SetStateAction<T>) => {
       setValue(newVal);
       window.electronStore.set(key, newVal);
     },
