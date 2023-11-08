@@ -6,33 +6,6 @@ import fakeCardData from "./util/fakeCardData";
 function App(): JSX.Element {
   const [data, setData] = useElectronStore<FileDatabase>("cards");
 
-  // if (!data) {
-  //   setData([
-  //     {
-  //       name: "english",
-  //       dayData: [
-  //         {
-  //           date: "Sept 18",
-  //           cards: [
-  //             {
-  //               id: "aaaaa",
-  //               fileName: "fooo1",
-  //               fileType: "docx",
-  //               tags: [],
-  //             },
-  //             {
-  //               id: "aaaaa2",
-  //               fileName: "fooo2",
-  //               fileType: "pdf",
-  //               tags: [],
-  //             },
-  //           ],
-  //         },
-  //       ],
-  //     },
-  //   ]);
-  // }
-
   // copied from https://codesandbox.io/s/react-beautiful-dnd-experiment-4k722
   // which I found on https://stackoverflow.com/a/60092971/13644774
   const onDragEnd: OnDragEndResponder = (val) => {
