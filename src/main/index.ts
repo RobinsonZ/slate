@@ -1,9 +1,8 @@
-import { app, shell, BrowserWindow, ipcMain, dialog } from "electron";
-import path, { join } from "path";
+import { app, shell, BrowserWindow, ipcMain } from "electron";
+import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import Store from "electron-store";
 import icon from "../../resources/icon.png?asset";
-import { lstat, readdir } from "fs/promises";
 
 const store = new Store();
 
@@ -92,35 +91,5 @@ ipcMain.handle("ping", () => {
   return "pong";
 });
 
-ipcMain.handle("ask-for-file", async (event, args) => {
-  const result = await dialog.showOpenDialog(
-    BrowserWindow.fromWebContents(event.sender)!!,
-    {
-      properties: ["openFile", "openDirectory"],
-      title: "Import Files",
-    }
-  );
-
-  if (result.canceled || !result.filePaths) {
-    return [];
-  }
-
-  // should just be one thing returned
-  const fpath = result.filePaths[0];
-  console.log(fpath);
-  // if it's a file, just return with that; otherwise pull everything out of the dir
-  if ((await lstat(fpath)).isDirectory()) {
-    console.log(`Loading contents of dir at ${fpath}`);
-    const dirContents = await readdir(fpath, { withFileTypes: true });
-
-    const filenames = dirContents
-      .filter((c) => c.isFile())
-      .filter((c) => !c.name.startsWith('.')) // ignore hidden files
-      .map((c) => path.join(fpath, c.name));
-    console.log(filenames);
-    return filenames;
-  } else {
-    console.log("Is a file");
-    return [fpath];
-  }
-});
+// files stuff
+import "./fileApi";
