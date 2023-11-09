@@ -83,9 +83,9 @@ function App(): JSX.Element {
       <DragDropContext onDragEnd={onDragEnd}>
         <header className="bg-white shadow fixed w-screen z-10">
           {/* no overflow-x-scroll as this needs to be handled by the browser, see https://github.com/atlassian/react-beautiful-dnd/issues/131#issuecomment-1144736558*/}
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto px-4 py-6 sm:px-6 lg:px-8">
             <h1 className="text-2xl font-bold tracking-tight text-gray-900 font-title">
-              TimeFinder
+              Slate
               <button
                 className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
                 onClick={() => setData(fakeCardData())}
