@@ -37,3 +37,9 @@ contextBridge.exposeInMainWorld("electronStore", {
     ipcRenderer.removeListener("electron-store-change", callback)
   }
 });
+
+contextBridge.exposeInMainWorld("files", {
+  askForImport() {
+    return ipcRenderer.invoke("ask-for-file");
+  }
+})

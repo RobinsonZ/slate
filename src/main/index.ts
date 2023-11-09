@@ -1,15 +1,16 @@
-import { app, shell, BrowserWindow, ipcMain } from "electron";
-import { join } from "path";
+import { app, shell, BrowserWindow, ipcMain, dialog } from "electron";
+import path, { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
-import Store from 'electron-store'
+import Store from "electron-store";
 import icon from "../../resources/icon.png?asset";
+import { lstat, readdir } from "fs/promises";
 
 const store = new Store();
 
-ipcMain.on('electron-store-get', async (event, val) => {
+ipcMain.on("electron-store-get", async (event, val) => {
   event.returnValue = store.get(val);
 });
-ipcMain.on('electron-store-set', async (_event, key, val) => {
+ipcMain.on("electron-store-set", async (_event, key, val) => {
   store.set(key, val);
 });
 
@@ -37,10 +38,10 @@ function createWindow(): void {
   });
 
   store.onDidAnyChange((newValue, oldValue) => {
-    mainWindow.webContents.send("electron-store-change", newValue, oldValue)
-  })
+    mainWindow.webContents.send("electron-store-change", newValue, oldValue);
+  });
 
-  store.openInEditor()
+  store.openInEditor();
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
@@ -89,4 +90,37 @@ app.on("window-all-closed", () => {
 // "server-side API"
 ipcMain.handle("ping", () => {
   return "pong";
+});
+
+ipcMain.handle("ask-for-file", async (event, args) => {
+  const result = await dialog.showOpenDialog(
+    BrowserWindow.fromWebContents(event.sender)!!,
+    {
+      properties: ["openFile", "openDirectory"],
+      title: "Import Files",
+    }
+  );
+
+  if (result.canceled || !result.filePaths) {
+    return [];
+  }
+
+  // should just be one thing returned
+  const fpath = result.filePaths[0];
+  console.log(fpath);
+  // if it's a file, just return with that; otherwise pull everything out of the dir
+  if ((await lstat(fpath)).isDirectory()) {
+    console.log(`Loading contents of dir at ${fpath}`);
+    const dirContents = await readdir(fpath, { withFileTypes: true });
+
+    const filenames = dirContents
+      .filter((c) => c.isFile())
+      .filter((c) => !c.name.startsWith('.')) // ignore hidden files
+      .map((c) => path.join(fpath, c.name));
+    console.log(filenames);
+    return filenames;
+  } else {
+    console.log("Is a file");
+    return [fpath];
+  }
 });

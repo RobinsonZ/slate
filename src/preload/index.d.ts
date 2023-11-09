@@ -22,6 +22,9 @@ declare global {
         ) => void
       ) => void;
     };
+    files: {
+      askForImport: () => Promise<string[]>;
+    }
     api: unknown;
   }
 }
