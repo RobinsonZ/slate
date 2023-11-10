@@ -1,15 +1,15 @@
 import { app, shell, BrowserWindow, ipcMain } from "electron";
 import { join } from "path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
-import Store from 'electron-store'
+import Store from "electron-store";
 import icon from "../../resources/icon.png?asset";
 
 const store = new Store();
 
-ipcMain.on('electron-store-get', async (event, val) => {
+ipcMain.on("electron-store-get", async (event, val) => {
   event.returnValue = store.get(val);
 });
-ipcMain.on('electron-store-set', async (_event, key, val) => {
+ipcMain.on("electron-store-set", async (_event, key, val) => {
   store.set(key, val);
 });
 
@@ -37,10 +37,10 @@ function createWindow(): void {
   });
 
   store.onDidAnyChange((newValue, oldValue) => {
-    mainWindow.webContents.send("electron-store-change", newValue, oldValue)
-  })
+    mainWindow.webContents.send("electron-store-change", newValue, oldValue);
+  });
 
-  store.openInEditor()
+  store.openInEditor();
 
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
@@ -90,3 +90,6 @@ app.on("window-all-closed", () => {
 ipcMain.handle("ping", () => {
   return "pong";
 });
+
+// files stuff
+import "./fileApi";

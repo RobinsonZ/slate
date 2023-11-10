@@ -22,6 +22,12 @@ declare global {
         ) => void
       ) => void;
     };
+    files: {
+      askForImport: () => Promise<string[]>;
+      /** Returns `true` if there is an error opening the provided file
+       *  (either because it doesn't exist or for other reasons). */
+      openExternally(path: string): Promise<boolean>;
+    };
     api: unknown;
   }
 }
