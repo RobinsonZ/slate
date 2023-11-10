@@ -41,5 +41,8 @@ contextBridge.exposeInMainWorld("electronStore", {
 contextBridge.exposeInMainWorld("files", {
   askForImport() {
     return ipcRenderer.invoke("ask-for-file");
+  },
+  openExternally(path: string) {
+    return ipcRenderer.invoke("open-external", path)
   }
 })

@@ -1,8 +1,8 @@
-import { ipcMain, dialog, BrowserWindow } from "electron";
+import { ipcMain, dialog, BrowserWindow, shell } from "electron";
 import { lstat, readdir } from "fs/promises";
 import path from "path";
 
-ipcMain.handle("ask-for-file", async (event, args) => {
+ipcMain.handle("ask-for-file", async (event, _args) => {
   const result = await dialog.showOpenDialog(
     BrowserWindow.fromWebContents(event.sender)!!,
     {
@@ -34,3 +34,15 @@ ipcMain.handle("ask-for-file", async (event, args) => {
     return [fpath];
   }
 });
+
+ipcMain.handle("open-external", async (_event, file) => {
+  console.log("Opening ", file)
+  const err = await shell.openPath(file)
+
+  if (err) {
+    console.log(`Error when opening ${file}: ${err}`)
+    return true
+  }
+
+  return false
+})
