@@ -7,7 +7,7 @@
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-A flexible document management interface for educators and learners. 
+A flexible document management interface for educators and learners.
 
 [Features](#features) •
 [Installation](#installation) •
@@ -20,7 +20,7 @@ A flexible document management interface for educators and learners.
 - Integrates with existing filesystems, Google Drive, and Dropbox.
 - Drag-and-drop file organization and live preview.
 - Groups files by designated classes and types.
-- Displays weekly and monthly explorer views. 
+- Displays weekly and monthly explorer views.
 
 ## Installation
 
@@ -52,5 +52,7 @@ $ npm run build:mac
 # For Linux
 $ npm run build:linux
 ```
+
 ## Examples
+
 <sup>[(Back to top)](#slate)</sup>

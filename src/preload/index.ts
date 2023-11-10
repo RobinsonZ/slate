@@ -30,12 +30,12 @@ contextBridge.exposeInMainWorld("electronStore", {
     ipcRenderer.send("electron-store-set", property, val);
   },
   onDidAnyChange(callback) {
-    ipcRenderer.on("electron-store-change", callback)
-    return callback
+    ipcRenderer.on("electron-store-change", callback);
+    return callback;
   },
   removeChangeListener(callback) {
-    ipcRenderer.removeListener("electron-store-change", callback)
-  }
+    ipcRenderer.removeListener("electron-store-change", callback);
+  },
 });
 
 contextBridge.exposeInMainWorld("files", {
@@ -43,6 +43,6 @@ contextBridge.exposeInMainWorld("files", {
     return ipcRenderer.invoke("ask-for-file");
   },
   openExternally(path: string) {
-    return ipcRenderer.invoke("open-external", path)
-  }
-})
+    return ipcRenderer.invoke("open-external", path);
+  },
+});

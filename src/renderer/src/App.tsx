@@ -46,7 +46,7 @@ function App(): JSX.Element {
       source.droppableId === "_IMPORTER"
         ? [importerFiles]
         : dataCopy.columns.filter(
-            (column) => column.name === source.droppableId
+            (column) => column.name === source.droppableId,
           );
     // same with destination column
 
@@ -55,12 +55,12 @@ function App(): JSX.Element {
     // task reamins in the same column so `destination` is same as `source`
     if (destination != null) {
       const [destinationColumn] = dataCopy.columns.filter(
-        (column) => column.name === destination.droppableId
+        (column) => column.name === destination.droppableId,
       );
 
       // We save the task we are moving
       const [movingTask] = sourceColumn.cards.filter(
-        (c) => c.id === draggableId
+        (c) => c.id === draggableId,
       );
 
       const newSourceCards = sourceColumn.cards.toSpliced(source.index, 1);
@@ -107,7 +107,7 @@ function App(): JSX.Element {
         <header
           className={classNames(
             "absolute min-h-full w-64 bg-white top-[5.25rem] ease-in-out transition-all p-4",
-            { "hidden opacity-0": !isImporting }
+            { "hidden opacity-0": !isImporting },
           )}
         >
           <SlateImporter
@@ -120,7 +120,7 @@ function App(): JSX.Element {
         <main
           className={classNames(
             "min-h-full absolute top-20 ease-in-out transition-all ",
-            { "ml-72": isImporting }
+            { "ml-72": isImporting },
           )}
         >
           <div className="mx-auto py-6 sm:px-6 lg:px-8">

@@ -1,7 +1,7 @@
 import { SetStateAction, useEffect, useState } from "react";
 
 export function useElectronStore<T>(
-  key: string
+  key: string,
 ): [T, (newVal: SetStateAction<T>) => void] {
   const [value, setValue] = useState<T>(window.electronStore.get(key));
   useEffect(() => {
@@ -10,7 +10,7 @@ export function useElectronStore<T>(
         if (newValue[key]) {
           setValue(newValue[key] as T);
         }
-      }
+      },
     );
     return () => {
       window.electronStore.removeChangeListener(callback);

@@ -1,23 +1,27 @@
 import { Draggable } from "react-beautiful-dnd";
 
-export default function SlateCard(props: SlateFile & {index: number}) {
-  const {
-    id, fileName, fileType, tags, index
-  } = props;
+export default function SlateCard(props: SlateFile & { index: number }) {
+  const { id, fileName, fileType, tags, index } = props;
 
   // SlateCard.tsx
-  const bgColorClass = fileType === "pdf" ? "bg-cardPdf" : fileType === "docx" ? "bg-cardDocx" : "bg-cardDefault";
+  const bgColorClass =
+    fileType === "pdf"
+      ? "bg-cardPdf"
+      : fileType === "docx"
+      ? "bg-cardDocx"
+      : "bg-cardDefault";
 
   return (
     <Draggable draggableId={id} index={index}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
-          className={`rounded p-2 mb-2 flex items-center justify-between ${bgColorClass} ${snapshot.isDragging ? "opacity-75" : "opacity-100"} shadow`}
+          className={`rounded p-2 mb-2 flex items-center justify-between ${bgColorClass} ${
+            snapshot.isDragging ? "opacity-75" : "opacity-100"
+          } shadow`}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
-
           <div className="flex flex-col justify-between w-full h-full">
             <p className="self-start font-detail">{fileName}</p>
             {/* Spacer to push filetype to the bottom */}
@@ -32,5 +36,3 @@ export default function SlateCard(props: SlateFile & {index: number}) {
     </Draggable>
   );
 }
-
-

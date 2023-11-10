@@ -8,7 +8,7 @@ ipcMain.handle("ask-for-file", async (event, _args) => {
     {
       properties: ["openFile", "openDirectory"],
       title: "Import Files",
-    }
+    },
   );
 
   if (result.canceled || !result.filePaths) {
@@ -25,7 +25,7 @@ ipcMain.handle("ask-for-file", async (event, _args) => {
 
     const filenames = dirContents
       .filter((c) => c.isFile())
-      .filter((c) => !c.name.startsWith('.')) // ignore hidden files
+      .filter((c) => !c.name.startsWith(".")) // ignore hidden files
       .map((c) => path.join(fpath, c.name));
     console.log(filenames);
     return filenames;
@@ -36,13 +36,13 @@ ipcMain.handle("ask-for-file", async (event, _args) => {
 });
 
 ipcMain.handle("open-external", async (_event, file) => {
-  console.log("Opening ", file)
-  const err = await shell.openPath(file)
+  console.log("Opening ", file);
+  const err = await shell.openPath(file);
 
   if (err) {
-    console.log(`Error when opening ${file}: ${err}`)
-    return true
+    console.log(`Error when opening ${file}: ${err}`);
+    return true;
   }
 
-  return false
-})
+  return false;
+});
