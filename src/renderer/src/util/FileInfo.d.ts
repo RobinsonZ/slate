@@ -3,7 +3,7 @@ interface SlateFile {
   type: "file";
   fileName: string;
   filePath: string;
-  fileType: "pptx" | "docx" | "pdf";
+  fileType: string;
   tags: string[];
 }
 

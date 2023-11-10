@@ -6,6 +6,7 @@ import { useState } from "react";
 import classNames from "classnames";
 import SlateImporter from "./components/SlateImporter";
 import { v4 as uuidv4 } from "uuid";
+import path from "path-browserify";
 
 function App(): JSX.Element {
   const [data, setData] = useElectronStore<FileDatabase>("cards");
@@ -97,7 +98,35 @@ function App(): JSX.Element {
                   "bg-blue-500": isImporting,
                   "bg-blue-200": !isImporting,
                 })}
-                onClick={() => setImporting((importing) => !importing)}
+                onClick={() => {
+                  if (!isImporting) {
+                    window.files.askForImport().then((value) => {
+                      console.log(value);
+                      if (value.length != 0) {
+                        const importFiles: SlateFile[] = value.map(
+                          (filepath) => ({
+                            fileName: path.basename(filepath),
+                            filePath: filepath,
+                            id: uuidv4(),
+                            fileType: path.extname(filepath).slice(1),
+                            type: "file",
+                            tags: [],
+                          }),
+                        );
+                        setImporterFiles((files) => ({
+                          ...files,
+                          cards: importFiles,
+                        }));
+
+                        setImporting(true);
+                      } else {
+                        setImporting(false);
+                      }
+                    });
+                  } else {
+                    setImporting(false);
+                  }
+                }}
               >
                 import
               </button>
