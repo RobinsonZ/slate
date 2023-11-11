@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import "@fontsource/patrick-hand";
 import "@fontsource/patrick-hand-sc";

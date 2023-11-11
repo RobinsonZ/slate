@@ -6,7 +6,6 @@ import { useState } from "react";
 import classNames from "classnames";
 import SlateImporter from "./components/SlateImporter";
 import { v4 as uuidv4 } from "uuid";
-import path from "path-browserify";
 
 function App(): JSX.Element {
   const [data, setData] = useElectronStore<FileDatabase>("cards");

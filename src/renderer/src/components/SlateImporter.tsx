@@ -3,8 +3,7 @@ import SlateCard from "./SlateCard";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import path from "path-browserify";
 import { v4 as uuidv4 } from "uuid";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+
 interface SlateImporterProps {
   data: FileDatabase;
   importerFiles: SlateFile[];
