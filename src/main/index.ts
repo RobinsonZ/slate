@@ -40,8 +40,6 @@ function createWindow(): void {
     mainWindow.webContents.send("electron-store-change", newValue, oldValue);
   });
 
-  store.openInEditor();
-
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env["ELECTRON_RENDERER_URL"]) {
