@@ -1,5 +1,5 @@
 import { Draggable, Droppable } from "react-beautiful-dnd";
-import React, { useState } from "react";
+import { useState } from "react";
 import SlateCard from "./SlateCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquareMinus } from "@fortawesome/free-regular-svg-icons";
