@@ -45,9 +45,7 @@ function App(): JSX.Element {
     const [sourceColumn] =
       source.droppableId === "_IMPORTER"
         ? [importerFiles]
-        : dataCopy.columns.filter(
-            (column) => column.id === source.droppableId
-          );
+        : dataCopy.columns.filter((column) => column.id === source.droppableId);
     // same with destination column
 
     // Destination might be `null`: when a task is
@@ -97,9 +95,9 @@ function App(): JSX.Element {
       ],
     };
 
-    setData(data => ({
+    setData((data) => ({
       ...data,
-      columns: data.columns.concat(newColumn)
+      columns: data.columns.concat(newColumn),
     }));
   };
 
@@ -160,12 +158,21 @@ function App(): JSX.Element {
           <div className="mx-auto py-6 sm:px-6 lg:px-8">
             <div className="w-[200%] h-full columns-xs gap-4 flex items-start pb-16 overflow-y-hidden select-none">
               {data?.columns?.map &&
-                data?.columns.map((colData) => (
+                data?.columns.map((colData, index) => (
                   <SlateColumn
                     name={colData.name}
                     id={colData.id}
                     key={colData.id}
                     cards={colData.cards}
+                    onNameChange={(newName) =>
+                      setData((old) => ({
+                        ...old,
+                        columns: old.columns.toSpliced(index, 1, {
+                          ...colData,
+                          name: newName,
+                        }),
+                      }))
+                    }
                   />
                 ))}
             </div>
