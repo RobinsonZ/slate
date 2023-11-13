@@ -1,4 +1,8 @@
-import { DragDropContext, OnDragEndResponder } from "react-beautiful-dnd";
+import {
+  DragDropContext,
+  Droppable,
+  OnDragEndResponder,
+} from "react-beautiful-dnd";
 import { useElectronStore } from "./util/useElectronStore";
 import SlateColumn from "./components/SlateColumn";
 import fakeCardData from "./util/fakeCardData";
@@ -6,10 +10,14 @@ import { useState } from "react";
 import classNames from "classnames";
 import SlateImporter from "./components/SlateImporter";
 import { v4 as uuidv4 } from "uuid";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 function App(): JSX.Element {
   const [data, setData] = useElectronStore<FileDatabase>("cards");
   const [isImporting, setImporting] = useState(false);
+
+  const [dragging, setDragging] = useState(false);
 
   const [importerFiles, setImporterFiles] = useState<SlateColumn>({
     name: "magic import column",
@@ -37,6 +45,7 @@ function App(): JSX.Element {
   // copied from https://codesandbox.io/s/react-beautiful-dnd-experiment-4k722
   // which I found on https://stackoverflow.com/a/60092971/13644774
   const onDragEnd: OnDragEndResponder = (val) => {
+    setDragging(false);
     const { draggableId, source, destination } = val;
     const dataCopy = JSON.parse(JSON.stringify(data)) as FileDatabase; // stupid deep copy
     // first find the source column, then the day: split the ID by "&" and search
@@ -51,7 +60,7 @@ function App(): JSX.Element {
     // Destination might be `null`: when a task is
     // dropped outside any drop area. In this case the
     // task reamins in the same column so `destination` is same as `source`
-    if (destination != null) {
+    if (destination != null && destination.droppableId != "_TRASH") {
       const [destinationColumn] = dataCopy.columns.filter(
         (column) => column.id === destination.droppableId
       );
@@ -70,6 +79,9 @@ function App(): JSX.Element {
 
       sourceColumn.cards = newSourceCards;
       destinationColumn.cards = newDestinationCards;
+    } else if (destination?.droppableId == "_TRASH") {
+      const newSourceCards = sourceColumn.cards.toSpliced(source.index, 1);
+      sourceColumn.cards = newSourceCards;
     }
     setData(dataCopy);
   };
@@ -104,8 +116,11 @@ function App(): JSX.Element {
   return (
     /* tailwind doesn't pick up classes in the index.html for some reason so I'm using bg-gray-500 here too,
     so that it'll get compiled into the built css */
-    <div className="bg-gray-500">
-      <DragDropContext onDragEnd={onDragEnd}>
+    <div className="bg-gray-500 max-h-full">
+      <DragDropContext
+        onDragStart={() => setDragging(true)}
+        onDragEnd={onDragEnd}
+      >
         <header className="bg-white shadow fixed w-screen z-10">
           {/* no overflow-x-scroll as this needs to be handled by the browser, see https://github.com/atlassian/react-beautiful-dnd/issues/131#issuecomment-1144736558*/}
           <div className="mx-auto px-4 py-6 sm:px-6 lg:px-8">
@@ -151,12 +166,32 @@ function App(): JSX.Element {
        overarching thing containing the import screen */}
         <main
           className={classNames(
-            "min-h-full absolute top-20 ease-in-out transition-all ",
+            "min-h-screen max-h-screen absolute pt-20 ease-in-out transition-all ",
             { "ml-72": isImporting }
           )}
         >
-          <div className="mx-auto py-6 sm:px-6 lg:px-8">
-            <div className="w-[200%] h-full columns-xs gap-4 flex items-start pb-16 overflow-y-hidden select-none">
+          <div className="absolute top-0 left-0 mx-auto pt-24 sm:px-6 lg:px-8 h-[100vh] pb-6 max-h-full w-full">
+            <div className="fixed bottom-5 left-5">
+              <Droppable droppableId="_TRASH">
+                {(provider, snapshot) => (
+                  <div
+                    className={classNames(
+                      "inline mx-2 p-1 rounded text-3xl font-detail h-100",
+                      {
+                        "opacity-0": !dragging,
+                        "bg-red-200": !snapshot.isDraggingOver,
+                        "bg-red-400": snapshot.isDraggingOver
+                      }
+                    )}
+                    ref={provider.innerRef}
+                    {...provider.droppableProps}
+                  >
+                    <FontAwesomeIcon className="mt-1" icon={faTrashCan} />
+                  </div>
+                )}
+              </Droppable>
+            </div>
+            <div className="relative top-0 left-0 h-full w-[200vw] columns-xs gap-4 flex items-start overflow-y-hidden select-none">
               {data?.columns?.map &&
                 data?.columns.map((colData, index) => (
                   <SlateColumn

@@ -17,7 +17,7 @@ export default function SlateColumn(props: SlateColumn & {onNameChange: ((newNam
 
   const removeGroup = () => {
     const confirmDelete = window.confirm(
-      `Are you sure you want to delete the group "${id}"?`
+      `Are you sure you want to delete the column "${name}"?`
     );
 
     if (confirmDelete) {
