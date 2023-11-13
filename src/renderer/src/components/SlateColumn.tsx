@@ -1,34 +1,57 @@
 import { Draggable, Droppable } from "react-beautiful-dnd";
 import { useState } from "react";
+import { useElectronStore } from "../util/useElectronStore";
 import SlateCard from "./SlateCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquareMinus } from "@fortawesome/free-regular-svg-icons";
 import { faSquarePlus } from "@fortawesome/free-regular-svg-icons";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 export default function SlateColumn(props: SlateColumn) {
   const { name, id, cards } = props;
   const [collapsed, setCollapsed] = useState(false);
+  const [data, setData] = useElectronStore<FileDatabase>("cards");
 
   let index = 0;
+
+  const removeGroup = () => {
+    const confirmDelete = window.confirm(`Are you sure you want to delete the group "${id}"?`);
+    
+    if (confirmDelete) {
+      const dataCopy = JSON.parse(JSON.stringify(data)) as FileDatabase;
+      
+      dataCopy.columns = dataCopy.columns.filter((column) => column.id !== id);
+
+      setData(dataCopy);
+    }
+  }
 
   return (
     <div className="bg-slate-100 rounded break-after-column min-w-[250px]">
       <div className="flex justify-between m-2 text-blue-500 text-xl">
         <h1 className="font-header">{name}</h1>
-        {!collapsed && (
-          <FontAwesomeIcon
-            className="mt-1 cursor-pointer"
+        <div>
+          {!collapsed && (
+            <FontAwesomeIcon
+            className="mt-1 mr-1 cursor-pointer"
             icon={faSquareMinus}
             onClick={() => setCollapsed((collapse) => !collapse)}
-          />
-        )}
-        {collapsed && (
-          <FontAwesomeIcon
-            className="mt-1 cursor-pointer"
+            />
+            )}
+          {collapsed && (
+            <FontAwesomeIcon
+            className="mt-1 mr-1 cursor-pointer"
             icon={faSquarePlus}
             onClick={() => setCollapsed((collapse) => !collapse)}
+            />
+            )}
+
+          <FontAwesomeIcon
+            className="mt-1 cursor-pointer"
+            icon={faTrashCan}
+            onClick={removeGroup}
           />
-        )}
+        </div>
       </div>
 
       {!collapsed && <hr className="bg-blue-500 h-0.5 mb-2" />}
