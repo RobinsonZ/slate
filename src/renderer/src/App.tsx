@@ -88,7 +88,7 @@ function App(): JSX.Element {
 
   const addNewGroup = () => {
     const newColumn: SlateColumn = {
-      name: "newGroup", // Avi: Not sure how we want to handle naming new columns
+      name: "New Column",
       id: uuidv4(),
       cards: [
         {
@@ -145,7 +145,7 @@ function App(): JSX.Element {
                 className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
                 onClick={addNewGroup}
               >
-                add group
+                New column 
               </button>
             </h1>
           </div>
