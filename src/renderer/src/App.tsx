@@ -46,7 +46,7 @@ function App(): JSX.Element {
       source.droppableId === "_IMPORTER"
         ? [importerFiles]
         : dataCopy.columns.filter(
-            (column) => column.name === source.droppableId
+            (column) => column.id === source.droppableId
           );
     // same with destination column
 
@@ -55,7 +55,7 @@ function App(): JSX.Element {
     // task reamins in the same column so `destination` is same as `source`
     if (destination != null) {
       const [destinationColumn] = dataCopy.columns.filter(
-        (column) => column.name === destination.droppableId
+        (column) => column.id === destination.droppableId
       );
 
       // We save the task we are moving
@@ -97,11 +97,10 @@ function App(): JSX.Element {
       ],
     };
 
-    const dataCopy = JSON.parse(JSON.stringify(data)) as FileDatabase;
-
-    dataCopy.columns.push(newColumn)
-
-    setData(dataCopy);
+    setData(data => ({
+      ...data,
+      columns: data.columns.concat(newColumn)
+    }));
   };
 
   return (
@@ -164,8 +163,8 @@ function App(): JSX.Element {
                 data?.columns.map((colData) => (
                   <SlateColumn
                     name={colData.name}
-                    id={colData.name}
-                    key={colData.name}
+                    id={colData.id}
+                    key={colData.id}
                     cards={colData.cards}
                   />
                 ))}
