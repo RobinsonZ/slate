@@ -1,6 +1,5 @@
 import ReactDOM from "react-dom/client";
-import "@fontsource/patrick-hand";
-import "@fontsource/patrick-hand-sc";
+import "@fontsource/roboto";
 import "@fontsource/arvo";
 import "@fontsource/arvo/700.css";
 import "./assets/index.css";
