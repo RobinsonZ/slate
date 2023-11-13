@@ -67,7 +67,7 @@ export default function SlateImporter(props: SlateImporterProps) {
             Change
           </button>
           <hr className="bg-black h-0.5 mb-2" />
-          <Droppable droppableId={"_IMPORTER"}>
+          <Droppable droppableId={"_IMPORTER"} isDropDisabled={true}>
             {(provided, snapshot) => (
               <div ref={provided.innerRef} {...provided.droppableProps}>
                 <>

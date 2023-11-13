@@ -13,11 +13,14 @@ import { v4 as uuidv4 } from "uuid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
+import { useKeyPress } from "react-use";
+
 function App(): JSX.Element {
   const [data, setData] = useElectronStore<FileDatabase>("cards");
   const [isImporting, setImporting] = useState(false);
-
   const [dragging, setDragging] = useState(false);
+
+  const [showDev, setShowDev] = useKeyPress("Alt");
 
   const [importerFiles, setImporterFiles] = useState<SlateColumn>({
     name: "magic import column",
@@ -60,7 +63,11 @@ function App(): JSX.Element {
     // Destination might be `null`: when a task is
     // dropped outside any drop area. In this case the
     // task reamins in the same column so `destination` is same as `source`
-    if (destination != null && destination.droppableId != "_TRASH") {
+    if (
+      destination != null &&
+      destination?.droppableId != "_TRASH" &&
+      destination.droppableId != "_IMPORTER"
+    ) {
       const [destinationColumn] = dataCopy.columns.filter(
         (column) => column.id === destination.droppableId
       );
@@ -79,7 +86,7 @@ function App(): JSX.Element {
 
       sourceColumn.cards = newSourceCards;
       destinationColumn.cards = newDestinationCards;
-    } else if (destination?.droppableId == "_TRASH") {
+    } else if (destination?.droppableId === "_TRASH") {
       const newSourceCards = sourceColumn.cards.toSpliced(source.index, 1);
       sourceColumn.cards = newSourceCards;
     }
@@ -123,15 +130,9 @@ function App(): JSX.Element {
       >
         <header className="bg-white shadow fixed w-screen z-10">
           {/* no overflow-x-scroll as this needs to be handled by the browser, see https://github.com/atlassian/react-beautiful-dnd/issues/131#issuecomment-1144736558*/}
-          <div className="mx-auto px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto py-6 px-8">
             <h1 className="text-2xl font-bold tracking-tight text-gray-900 font-title">
               Slate
-              <button
-                className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
-                onClick={() => setData(fakeCardData())}
-              >
-                reset cards
-              </button>
               <button
                 className={classNames("inline mx-2 p-1 rounded text-xl", {
                   "bg-blue-500": isImporting,
@@ -139,21 +140,27 @@ function App(): JSX.Element {
                 })}
                 onClick={() => setImporting((importing) => !importing)}
               >
-                import
+                Import
               </button>
               <button
                 className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
                 onClick={addNewGroup}
               >
-                New column 
+                New Column
               </button>
+              {showDev && <button
+                className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
+                onClick={() => setData(fakeCardData())}
+              >
+                reset cards
+              </button>}
             </h1>
           </div>
         </header>
         <header
           className={classNames(
-            "absolute min-h-full w-64 bg-white top-[5.25rem] ease-in-out transition-all p-4",
-            { "hidden opacity-0": !isImporting }
+            "absolute top-0 left-0 h-screen w-[250px] ps-6 bg-white pt-[6rem] ease-in-out transition-transform p-4 overflow-scroll",
+            { "translate-x-[-250px]": !isImporting }
           )}
         >
           <SlateImporter
@@ -165,12 +172,9 @@ function App(): JSX.Element {
         {/* again, funny hack with the margins because we can't just have this be a child of an
        overarching thing containing the import screen */}
         <main
-          className={classNames(
-            "min-h-screen max-h-screen absolute pt-20 ease-in-out transition-all ",
-            { "ml-72": isImporting }
-          )}
+          className={classNames("min-h-screen max-h-screen absolute pt-20")}
         >
-          <div className="absolute top-0 left-0 mx-auto pt-24 sm:px-6 lg:px-8 h-[100vh] pb-6 max-h-full w-full">
+          <div className="absolute top-0 left-0 mx-auto pt-24 px-8 h-[100vh] pb-6 max-h-full w-full">
             <div className="fixed bottom-5 left-5">
               <Droppable droppableId="_TRASH">
                 {(provider, snapshot) => (
@@ -191,7 +195,14 @@ function App(): JSX.Element {
                 )}
               </Droppable>
             </div>
-            <div className="relative top-0 left-0 h-full w-[200vw] columns-xs gap-4 flex items-start overflow-y-hidden select-none">
+            <div
+              className={classNames(
+                "relative top-0 h-full w-[200vw] columns-xs gap-4 flex items-start overflow-y-hidden select-none transition-[margin-left] ease-in-out",
+                {
+                  "ml-[235px]": isImporting,
+                }
+              )}
+            >
               {data?.columns?.map &&
                 data?.columns.map((colData, index) => (
                   <SlateColumn
