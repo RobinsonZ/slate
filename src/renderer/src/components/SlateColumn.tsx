@@ -8,8 +8,13 @@ import { faSquarePlus } from "@fortawesome/free-regular-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import ContentEditable from "react-contenteditable";
 
-export default function SlateColumn(props: SlateColumn & {onNameChange: ((newName: string) => void)}) {
-  const { name, id, cards, onNameChange } = props;
+export default function SlateColumn(
+  props: SlateColumn & {
+    onNameChange: (newName: string) => void;
+    onInnerNameChange: (id: string, newName: string) => void;
+  }
+) {
+  const { name, id, cards, onNameChange, onInnerNameChange } = props;
   const [collapsed, setCollapsed] = useState(false);
   const [data, setData] = useElectronStore<FileDatabase>("cards");
 
@@ -78,25 +83,34 @@ export default function SlateColumn(props: SlateColumn & {onNameChange: ((newNam
                           draggableId={item.id}
                           key={item.id}
                           index={index++}
-                          isDragDisabled={item.type === "day"}
+                          isDragDisabled={true}
                         >
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                            >
-                              <h1 className="text-lg font-subheader italic mb-1 text-blue-500">
-                                {item.day}
-                              </h1>
-                              <hr className="bg-blue-500 h-0.5 mb-2" />
-                            </div>
-                          )}
+                          {(provided, snapshot) => {
+                            const innerEditRef = createRef<HTMLElement>()
+                            return (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <ContentEditable
+                                  className="font-subheader text-lg italic mb-1 text-blue-500"
+                                  innerRef={innerEditRef}
+                                  html={item.day}
+                                  onChange={(e) =>
+                                    onInnerNameChange(item.id, e.target.value)
+                                  }
+                                  tagName="h1"
+                                />
+                                <hr className="bg-blue-500 h-0.5 mb-2" />
+                              </div>
+                            );
+                          }}
                         </Draggable>
                       );
                     } else {
                       return (
-                        <SlateCard key={item.id} index={index++} {...item} />
+                        <SlateCard key={item.id} index={index++} {...item} onInnerNameChange={onInnerNameChange} />
                       );
                     }
                   })}

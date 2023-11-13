@@ -1,7 +1,14 @@
+import { createRef } from "react";
 import { Draggable } from "react-beautiful-dnd";
+import ContentEditable from "react-contenteditable";
 
-export default function SlateCard(props: SlateFile & { index: number }) {
-  const { id, fileName, fileType, tags, index } = props;
+export default function SlateCard(
+  props: SlateFile & {
+    index: number;
+    onInnerNameChange: (id: string, newName: string) => void;
+  }
+) {
+  const { id, fileName, fileType, tags, index, onInnerNameChange } = props;
 
   // SlateCard.tsx
   const bgColorClass =
@@ -11,6 +18,7 @@ export default function SlateCard(props: SlateFile & { index: number }) {
       ? "bg-cardDocx"
       : "bg-cardDefault";
 
+  const ref = createRef<HTMLElement>()
   return (
     <Draggable draggableId={id} index={index}>
       {(provided, snapshot) => (
@@ -23,7 +31,14 @@ export default function SlateCard(props: SlateFile & { index: number }) {
           {...provided.dragHandleProps}
         >
           <div className="flex flex-col justify-between w-full h-full">
-            <p className="self-start font-detail">{fileName}</p>
+            <ContentEditable
+              className="self-start font-detail"
+              innerRef={ref}
+              html={fileName}
+              onChange={(e) => onInnerNameChange(id, e.target.value)}
+              tagName="h1"
+            />
+            {/* <p className="self-start font-detail">{fileName}</p> */}
             {/* Spacer to push filetype to the bottom */}
             <div className="flex-grow"></div>
             {/* Align filetype label to the bottom-right */}

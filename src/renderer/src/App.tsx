@@ -180,7 +180,7 @@ function App(): JSX.Element {
                       {
                         "opacity-0": !dragging,
                         "bg-red-200": !snapshot.isDraggingOver,
-                        "bg-red-400": snapshot.isDraggingOver
+                        "bg-red-400": snapshot.isDraggingOver,
                       }
                     )}
                     ref={provider.innerRef}
@@ -205,6 +205,37 @@ function App(): JSX.Element {
                         columns: old.columns.toSpliced(index, 1, {
                           ...colData,
                           name: newName,
+                        }),
+                      }))
+                    }
+                    onInnerNameChange={(id, newName) =>
+                      setData((old) => ({
+                        ...old,
+                        columns: old.columns.map((col) => {
+                          if (col.id !== colData.id) {
+                            return col;
+                          }
+
+                          return {
+                            ...col,
+                            cards: col.cards.map((card) => {
+                              if (card.id !== id) {
+                                return card;
+                              }
+
+                              if (card.type === "day") {
+                                return {
+                                  ...card,
+                                  day: newName,
+                                };
+                              } else {
+                                return {
+                                  ...card,
+                                  fileName: newName,
+                                };
+                              }
+                            }),
+                          };
                         }),
                       }))
                     }
