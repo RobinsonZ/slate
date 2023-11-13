@@ -20,8 +20,13 @@ export function useElectronStore<T>(
   return [
     value,
     (newVal: SetStateAction<T>) => {
+      if ((newVal as (prev: T) => T).call !== undefined) {
+        window.electronStore.set(key, (newVal as (prev: T) => T).call(null, value));
+      } else {
+        window.electronStore.set(key, newVal)
+      }
       setValue(newVal);
-      window.electronStore.set(key, newVal);
+
     },
   ];
 }
