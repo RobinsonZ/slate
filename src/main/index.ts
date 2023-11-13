@@ -14,6 +14,7 @@ ipcMain.on("electron-store-set", async (_event, key, val) => {
 });
 
 function createWindow(): void {
+  store.openInEditor();
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,

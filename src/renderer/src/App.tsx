@@ -76,6 +76,34 @@ function App(): JSX.Element {
     setData(dataCopy);
   };
 
+  const addNewGroup = () => {
+    const newColumn: SlateColumn = {
+      name: "newGroup", // Avi: Not sure how we want to handle naming new columns
+      id: uuidv4(),
+      cards: [
+        {
+          type: "day",
+          id: uuidv4(),
+          day: "sept 19",
+        },
+        {
+          type: "file",
+          id: uuidv4(),
+          fileName: "sample file",
+          filePath: "fake",
+          fileType: "docx",
+          tags: [],
+        },
+      ],
+    };
+
+    const dataCopy = JSON.parse(JSON.stringify(data)) as FileDatabase;
+
+    dataCopy.columns.push(newColumn)
+
+    setData(dataCopy);
+  };
+
   return (
     /* tailwind doesn't pick up classes in the index.html for some reason so I'm using bg-gray-500 here too,
     so that it'll get compiled into the built css */
@@ -100,6 +128,12 @@ function App(): JSX.Element {
                 onClick={() => setImporting((importing) => !importing)}
               >
                 import
+              </button>
+              <button
+                className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
+                onClick={addNewGroup}
+              >
+                add group
               </button>
             </h1>
           </div>
