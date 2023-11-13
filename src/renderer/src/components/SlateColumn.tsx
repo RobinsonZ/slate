@@ -30,7 +30,7 @@ export default function SlateColumn(props: SlateColumn & {onNameChange: ((newNam
   };
   const editableRef = createRef<HTMLElement>();
   return (
-    <div className="bg-slate-100 rounded break-after-column min-w-[250px]">
+    <div className="bg-slate-100 rounded break-after-column min-w-[250px] max-w-[250px] max-h-full overflow-y-scroll">
       <div className="flex justify-between m-2 text-blue-500 text-xl">
         <ContentEditable
           className="font-header"
