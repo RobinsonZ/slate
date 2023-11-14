@@ -13,6 +13,8 @@ A flexible document management interface for educators and learners.
 [Installation](#installation) •
 [Examples](#examples)
 
+[![build](https://github.com/RobinsonZ/slate/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/RobinsonZ/slate/releases)
+
 </div>
 
 ## Features
