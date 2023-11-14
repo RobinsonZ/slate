@@ -1,20 +1,25 @@
 import { Draggable, Droppable } from "react-beautiful-dnd";
-import { createRef, useState } from "react";
+import { RefObject, createRef, useRef, useState } from "react";
 import { useElectronStore } from "../util/useElectronStore";
 import SlateCard from "./SlateCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquareMinus } from "@fortawesome/free-regular-svg-icons";
 import { faSquarePlus } from "@fortawesome/free-regular-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import DatePicker from "react-date-picker";
 import ContentEditable from "react-contenteditable";
+import "react-date-picker/dist/DatePicker.css";
+import "react-calendar/dist/Calendar.css";
 
 export default function SlateColumn(
   props: SlateColumn & {
     onNameChange: (newName: string) => void;
     onInnerNameChange: (id: string, newName: string) => void;
+    addNewDate: () => void;
   }
 ) {
-  const { name, id, cards, onNameChange, onInnerNameChange } = props;
+  const { name, id, cards, onNameChange, onInnerNameChange, addNewDate } =
+    props;
   const [collapsed, setCollapsed] = useState(false);
   const [data, setData] = useElectronStore<FileDatabase>("cards");
 
@@ -33,13 +38,14 @@ export default function SlateColumn(
       setData(dataCopy);
     }
   };
-  const editableRef = createRef<HTMLElement>();
+  const titleEditRef = createRef<HTMLElement>();
+  let lastRef: RefObject<HTMLElement>;
   return (
     <div className="bg-slate-100 rounded break-after-column min-w-[250px] max-w-[250px] max-h-full overflow-y-scroll">
       <div className="flex justify-between m-2 text-blue-500 text-xl">
         <ContentEditable
           className="font-header"
-          innerRef={editableRef}
+          innerRef={titleEditRef}
           html={name}
           onChange={(e) => onNameChange(e.target.value)}
           tagName="h1"
@@ -76,7 +82,7 @@ export default function SlateColumn(
             {(provided, snapshot) => (
               <div ref={provided.innerRef} {...provided.droppableProps}>
                 <>
-                  {cards.map((item) => {
+                  {cards.map((item, index) => {
                     if (item.type == "day") {
                       return (
                         <Draggable
@@ -86,14 +92,16 @@ export default function SlateColumn(
                           isDragDisabled={true}
                         >
                           {(provided, snapshot) => {
-                            const innerEditRef = createRef<HTMLElement>()
+                            const [dateEdit, setDateEdit] = useState(false);
+
                             return (
                               <div
                                 ref={provided.innerRef}
+                                className="min-h-[34px] mb-2"
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
                               >
-                                <ContentEditable
+                                {/* <ContentEditable
                                   className="font-subheader text-lg italic mb-1 text-blue-500"
                                   innerRef={innerEditRef}
                                   html={item.day}
@@ -101,7 +109,35 @@ export default function SlateColumn(
                                     onInnerNameChange(item.id, e.target.value)
                                   }
                                   tagName="h1"
-                                />
+                                /> */}
+                                {dateEdit ? (
+                                  <DatePicker
+                                    onChange={(newval) => {
+                                      setDateEdit(false);
+                                      onInnerNameChange(
+                                        item.id,
+                                        newval?.toString() || ""
+                                      );
+                                    }}
+                                    onCalendarClose={() => setDateEdit(false)}
+                                    value={item.day}
+                                    isOpen={true}
+                                  />
+                                ) : (
+                                  <h1
+                                    className="font-subheader text-lg italic mb-1 text-blue-500 cursor-pointer"
+                                    onClick={() => setDateEdit(true)}
+                                  >
+                                    {new Date(item.day).toLocaleString(
+                                      "en-US",
+                                      {
+                                        day: "2-digit",
+                                        month: "short",
+                                      }
+                                    )}
+                                  </h1>
+                                )}
+
                                 <hr className="bg-blue-500 h-0.5 mb-2" />
                               </div>
                             );
@@ -110,7 +146,12 @@ export default function SlateColumn(
                       );
                     } else {
                       return (
-                        <SlateCard key={item.id} index={index++} {...item} onInnerNameChange={onInnerNameChange} />
+                        <SlateCard
+                          key={item.id}
+                          index={index++}
+                          {...item}
+                          onInnerNameChange={onInnerNameChange}
+                        />
                       );
                     }
                   })}
@@ -119,6 +160,20 @@ export default function SlateColumn(
               </div>
             )}
           </Droppable>
+          <div
+            className="cursor-pointer"
+            onClick={() => {
+              addNewDate();
+              requestAnimationFrame(() => {
+                console.log(lastRef);
+              });
+            }}
+          >
+            <h1 className="font-subheader italic mb-1 text-blue-500 inline-block">
+              Add date...
+            </h1>
+            <hr className="bg-blue-500 h-0.5 mb-2" />
+          </div>
         </div>
       )}
     </div>

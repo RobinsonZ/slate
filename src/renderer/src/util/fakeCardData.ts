@@ -8,7 +8,7 @@ export default function fakeCardData(): FileDatabase {
           {
             type: "day",
             id: "a-day-sept19",
-            day: "sept 19",
+            day: "sept 19 2023",
           },
           {
             type: "file",
@@ -29,7 +29,7 @@ export default function fakeCardData(): FileDatabase {
           {
             type: "day",
             id: "a-day-sept20",
-            day: "sept 20",
+            day: "sept 20 2023",
           },
           {
             type: "file",
@@ -48,7 +48,7 @@ export default function fakeCardData(): FileDatabase {
           {
             type: "day",
             id: "b-day-sept19",
-            day: "sept 19",
+            day: "sept 19 2023",
           },
           {
             type: "file",

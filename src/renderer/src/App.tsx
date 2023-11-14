@@ -101,7 +101,7 @@ function App(): JSX.Element {
         {
           type: "day",
           id: uuidv4(),
-          day: "sept 19",
+          day: "sept 19 2023",
         },
         {
           type: "file",
@@ -148,12 +148,14 @@ function App(): JSX.Element {
               >
                 New Column
               </button>
-              {showDev && <button
-                className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
-                onClick={() => setData(fakeCardData())}
-              >
-                reset cards
-              </button>}
+              {showDev && (
+                <button
+                  className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
+                  onClick={() => setData(fakeCardData())}
+                >
+                  reset cards
+                </button>
+              )}
             </h1>
           </div>
         </header>
@@ -229,23 +231,54 @@ function App(): JSX.Element {
 
                           return {
                             ...col,
-                            cards: col.cards.map((card) => {
-                              if (card.id !== id) {
-                                return card;
-                              }
+                            cards: col.cards.reduce(
+                              (filtered, card) => {
+                                if (card.id !== id) {
+                                  filtered.push(card);
+                                  return filtered;
+                                }
 
-                              if (card.type === "day") {
-                                return {
-                                  ...card,
-                                  day: newName,
-                                };
-                              } else {
-                                return {
-                                  ...card,
-                                  fileName: newName,
-                                };
-                              }
-                            }),
+                                if (newName == "") {
+                                  return filtered;
+                                }
+
+                                if (card.type === "day") {
+                                  filtered.push({
+                                    ...card,
+                                    day: newName,
+                                  });
+                                } else {
+                                  filtered.push({
+                                    ...card,
+                                    fileName: newName,
+                                  });
+                                }
+                                return filtered;
+                              },
+                              [] as (SlateFile | SlateDayHeader)[]
+                            ),
+                          };
+                        }),
+                      }))
+                    }
+                    addNewDate={() =>
+                      setData((old) => ({
+                        ...old,
+                        columns: old.columns.map((col) => {
+                          if (col.id !== colData.id) {
+                            return col;
+                          }
+
+                          return {
+                            ...col,
+                            cards: [
+                              ...col.cards,
+                              {
+                                type: "day",
+                                id: uuidv4(),
+                                day: new Date().toString(),
+                              },
+                            ],
                           };
                         }),
                       }))
