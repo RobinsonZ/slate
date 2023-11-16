@@ -128,7 +128,7 @@ function App(): JSX.Element {
         onDragStart={() => setDragging(true)}
         onDragEnd={onDragEnd}
       >
-        <header className="bg-white shadow fixed w-screen z-10">
+        <header className="bg-white shadow fixed w-screen z-20">
           {/* no overflow-x-scroll as this needs to be handled by the browser, see https://github.com/atlassian/react-beautiful-dnd/issues/131#issuecomment-1144736558*/}
           <div className="mx-auto py-6 px-8">
             <h1 className="text-2xl font-bold tracking-tight text-gray-900 font-title">
@@ -161,7 +161,7 @@ function App(): JSX.Element {
         </header>
         <header
           className={classNames(
-            "absolute top-0 left-0 h-screen w-[250px] ps-6 bg-white pt-[6rem] ease-in-out transition-transform p-4 overflow-scroll",
+            "fixed z-10 top-0 left-0 h-screen w-[250px] ps-6 bg-white pt-[6rem] ease-in-out transition-transform p-4 overflow-scroll drop-shadow",
             { "translate-x-[-250px]": !isImporting }
           )}
         >
