@@ -14,9 +14,9 @@ ipcMain.on("electron-store-set", async (_event, key, val) => {
 });
 
 function createWindow(): void {
-  if (is.dev) { // Assuming is.dev is a flag for development mode
-  store.openInEditor();
-}
+  if (is.dev) {
+    store.openInEditor();
+  }
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 900,
