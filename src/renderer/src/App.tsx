@@ -14,13 +14,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 import { useKeyPress } from "react-use";
+import { TestContext, TestMode } from "./context/context";
 
 function App(): JSX.Element {
   const [data, setData] = useElectronStore<FileDatabase>("cards");
   const [isImporting, setImporting] = useState(false);
   const [dragging, setDragging] = useState(false);
 
-  const [showDev, setShowDev] = useKeyPress("Alt");
+  const [showDev] = useKeyPress("Alt");
+
+  const [testMode, setTestMode] = useState<TestMode>("doubleclick");
 
   const [importerFiles, setImporterFiles] = useState<SlateColumn>({
     name: "magic import column",
@@ -128,166 +131,183 @@ function App(): JSX.Element {
         onDragStart={() => setDragging(true)}
         onDragEnd={onDragEnd}
       >
-        <header className="bg-white shadow fixed w-screen z-20">
-          {/* no overflow-x-scroll as this needs to be handled by the browser, see https://github.com/atlassian/react-beautiful-dnd/issues/131#issuecomment-1144736558*/}
-          <div className="mx-auto py-6 px-8">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 font-title">
-              Slate
-              <button
-                className={classNames("inline mx-2 p-1 rounded text-xl", {
-                  "bg-blue-500": isImporting,
-                  "bg-blue-200": !isImporting,
-                })}
-                onClick={() => setImporting((importing) => !importing)}
-              >
-                Import
-              </button>
-              <button
-                className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
-                onClick={addNewGroup}
-              >
-                New Column
-              </button>
-              {showDev && (
+        <TestContext.Provider value={testMode}>
+          <header className="bg-white shadow fixed w-screen z-20">
+            {/* no overflow-x-scroll as this needs to be handled by the browser, see https://github.com/atlassian/react-beautiful-dnd/issues/131#issuecomment-1144736558*/}
+            <div className="mx-auto py-6 px-8">
+              <h1 className="text-2xl font-bold tracking-tight text-gray-900 font-title">
+                Slate
+                <button
+                  className={classNames("inline mx-2 p-1 rounded text-xl", {
+                    "bg-blue-500": isImporting,
+                    "bg-blue-200": !isImporting,
+                  })}
+                  onClick={() => setImporting((importing) => !importing)}
+                >
+                  Import
+                </button>
                 <button
                   className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
-                  onClick={() => setData(fakeCardData())}
+                  onClick={addNewGroup}
                 >
-                  reset cards
+                  New Column
                 </button>
-              )}
-            </h1>
-          </div>
-        </header>
-        <header
-          className={classNames(
-            "fixed z-10 top-0 left-0 h-screen w-[250px] ps-6 bg-white pt-[6rem] ease-in-out transition-transform p-4 overflow-scroll drop-shadow",
-            { "translate-x-[-250px]": !isImporting }
-          )}
-        >
-          <SlateImporter
-            importerFiles={importerFiles.cards as SlateFile[]}
-            setImporterFiles={setImporterFiles}
-            data={data}
-          />
-        </header>
-        {/* again, funny hack with the margins because we can't just have this be a child of an
-       overarching thing containing the import screen */}
-        <main
-          className={classNames("min-h-screen max-h-screen absolute pt-20")}
-        >
-          <div className="absolute top-0 left-0 mx-auto pt-24 px-8 h-[100vh] pb-6 max-h-full w-full">
-            <div className="fixed bottom-5 left-5">
-              <Droppable droppableId="_TRASH">
-                {(provider, snapshot) => (
-                  <div
-                    className={classNames(
-                      "inline mx-2 p-1 rounded text-3xl font-detail h-100",
-                      {
-                        "opacity-0": !dragging,
-                        "bg-red-200": !snapshot.isDraggingOver,
-                        "bg-red-400": snapshot.isDraggingOver,
-                      }
-                    )}
-                    ref={provider.innerRef}
-                    {...provider.droppableProps}
+                {showDev && (
+                  <button
+                    className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
+                    onClick={() => setData(fakeCardData())}
                   >
-                    <FontAwesomeIcon className="mt-1" icon={faTrashCan} />
-                  </div>
+                    reset cards
+                  </button>
                 )}
-              </Droppable>
+                {showDev && (
+                  <button
+                    className={classNames("inline mx-2 p-1 rounded text-xl", {
+                      "bg-blue-500": testMode == "doubleclick",
+                      "bg-blue-200": testMode != "doubleclick",
+                    })}
+                    onClick={() =>
+                      setTestMode((mode) =>
+                        mode == "doubleclick" ? "button" : "doubleclick"
+                      )
+                    }
+                  >
+                    Mode: {testMode}
+                  </button>
+                )}
+              </h1>
             </div>
-            <div
-              className={classNames(
-                "relative top-0 h-full w-[200vw] columns-xs gap-4 flex items-start overflow-y-hidden select-none transition-[margin-left] ease-in-out",
-                {
-                  "ml-[235px]": isImporting,
-                }
-              )}
-            >
-              {data?.columns?.map &&
-                data?.columns.map((colData, index) => (
-                  <SlateColumn
-                    name={colData.name}
-                    id={colData.id}
-                    key={colData.id}
-                    cards={colData.cards}
-                    onNameChange={(newName) =>
-                      setData((old) => ({
-                        ...old,
-                        columns: old.columns.toSpliced(index, 1, {
-                          ...colData,
-                          name: newName,
-                        }),
-                      }))
-                    }
-                    onInnerNameChange={(id, newName) =>
-                      setData((old) => ({
-                        ...old,
-                        columns: old.columns.map((col) => {
-                          if (col.id !== colData.id) {
-                            return col;
-                          }
+          </header>
+          <header
+            className={classNames(
+              "fixed z-10 top-0 left-0 h-screen w-[250px] ps-6 bg-white pt-[6rem] ease-in-out transition-transform p-4 overflow-scroll drop-shadow",
+              { "translate-x-[-250px]": !isImporting }
+            )}
+          >
+            <SlateImporter
+              importerFiles={importerFiles.cards as SlateFile[]}
+              setImporterFiles={setImporterFiles}
+              data={data}
+            />
+          </header>
+          {/* again, funny hack with the margins because we can't just have this be a child of an
+       overarching thing containing the import screen */}
+          <main
+            className={classNames("min-h-screen max-h-screen absolute pt-20")}
+          >
+            <div className="absolute top-0 left-0 mx-auto pt-24 px-8 h-[100vh] pb-6 max-h-full w-full">
+              <div className="fixed bottom-5 left-5">
+                <Droppable droppableId="_TRASH">
+                  {(provider, snapshot) => (
+                    <div
+                      className={classNames(
+                        "inline mx-2 p-1 rounded text-3xl font-detail h-100",
+                        {
+                          "opacity-0": !dragging,
+                          "bg-red-200": !snapshot.isDraggingOver,
+                          "bg-red-400": snapshot.isDraggingOver,
+                        }
+                      )}
+                      ref={provider.innerRef}
+                      {...provider.droppableProps}
+                    >
+                      <FontAwesomeIcon className="mt-1" icon={faTrashCan} />
+                    </div>
+                  )}
+                </Droppable>
+              </div>
+              <div
+                className={classNames(
+                  "relative top-0 h-full w-[200vw] columns-xs gap-4 flex items-start overflow-y-hidden select-none transition-[margin-left] ease-in-out",
+                  {
+                    "ml-[235px]": isImporting,
+                  }
+                )}
+              >
+                {data?.columns?.map &&
+                  data?.columns.map((colData, index) => (
+                    <SlateColumn
+                      name={colData.name}
+                      id={colData.id}
+                      key={colData.id}
+                      cards={colData.cards}
+                      onNameChange={(newName) =>
+                        setData((old) => ({
+                          ...old,
+                          columns: old.columns.toSpliced(index, 1, {
+                            ...colData,
+                            name: newName,
+                          }),
+                        }))
+                      }
+                      onInnerNameChange={(id, newName) =>
+                        setData((old) => ({
+                          ...old,
+                          columns: old.columns.map((col) => {
+                            if (col.id !== colData.id) {
+                              return col;
+                            }
 
-                          return {
-                            ...col,
-                            cards: col.cards.reduce(
-                              (filtered, card) => {
-                                if (card.id !== id) {
-                                  filtered.push(card);
+                            return {
+                              ...col,
+                              cards: col.cards.reduce(
+                                (filtered, card) => {
+                                  if (card.id !== id) {
+                                    filtered.push(card);
+                                    return filtered;
+                                  }
+
+                                  if (newName == "") {
+                                    return filtered;
+                                  }
+
+                                  if (card.type === "day") {
+                                    filtered.push({
+                                      ...card,
+                                      day: newName,
+                                    });
+                                  } else {
+                                    filtered.push({
+                                      ...card,
+                                      fileName: newName,
+                                    });
+                                  }
                                   return filtered;
-                                }
+                                },
+                                [] as (SlateFile | SlateDayHeader)[]
+                              ),
+                            };
+                          }),
+                        }))
+                      }
+                      addNewDate={() =>
+                        setData((old) => ({
+                          ...old,
+                          columns: old.columns.map((col) => {
+                            if (col.id !== colData.id) {
+                              return col;
+                            }
 
-                                if (newName == "") {
-                                  return filtered;
-                                }
-
-                                if (card.type === "day") {
-                                  filtered.push({
-                                    ...card,
-                                    day: newName,
-                                  });
-                                } else {
-                                  filtered.push({
-                                    ...card,
-                                    fileName: newName,
-                                  });
-                                }
-                                return filtered;
-                              },
-                              [] as (SlateFile | SlateDayHeader)[]
-                            ),
-                          };
-                        }),
-                      }))
-                    }
-                    addNewDate={() =>
-                      setData((old) => ({
-                        ...old,
-                        columns: old.columns.map((col) => {
-                          if (col.id !== colData.id) {
-                            return col;
-                          }
-
-                          return {
-                            ...col,
-                            cards: [
-                              ...col.cards,
-                              {
-                                type: "day",
-                                id: uuidv4(),
-                                day: new Date().toString(),
-                              },
-                            ],
-                          };
-                        }),
-                      }))
-                    }
-                  />
-                ))}
+                            return {
+                              ...col,
+                              cards: [
+                                ...col.cards,
+                                {
+                                  type: "day",
+                                  id: uuidv4(),
+                                  day: new Date().toString(),
+                                },
+                              ],
+                            };
+                          }),
+                        }))
+                      }
+                    />
+                  ))}
+              </div>
             </div>
-          </div>
-        </main>
+          </main>
+        </TestContext.Provider>
       </DragDropContext>
     </div>
   );
