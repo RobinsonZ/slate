@@ -1,4 +1,5 @@
-import { createRef } from "react";
+import { TestContext } from "@renderer/context/context";
+import { createRef, useContext } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import ContentEditable from "react-contenteditable";
 
@@ -9,6 +10,8 @@ export default function SlateCard(
   }
 ) {
   const { id, fileName, fileType, tags, index, onInnerNameChange } = props;
+  
+  const testMode = useContext(TestContext)
 
   // SlateCard.tsx
   const bgColorClass =
