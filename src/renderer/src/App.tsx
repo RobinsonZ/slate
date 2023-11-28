@@ -196,7 +196,7 @@ function App(): JSX.Element {
             className={classNames("min-h-screen max-h-screen absolute pt-20")}
           >
             <div className="absolute top-0 left-0 mx-auto pt-24 px-8 h-[100vh] pb-6 max-h-full w-full">
-              <div className="fixed bottom-5 left-5">
+              <div className="fixed bottom-5 left-5 z-50">
                 <Droppable droppableId="_TRASH">
                   {(provider, snapshot) => (
                     <div
