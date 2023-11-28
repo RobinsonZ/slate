@@ -25,10 +25,18 @@ export default function SlateCard(
       : "bg-cardDefault";
 
   const ref = createRef<HTMLElement>();
+
+  const handleDoubleClick = () => {
+    if (testMode === "doubleclick") {
+      window.files.openExternally(filePath);
+    }
+  };
+
   return (
     <Draggable draggableId={id} index={index}>
       {(provided, snapshot) => (
         <div
+          onDoubleClick={handleDoubleClick}
           ref={provided.innerRef}
           className={`rounded p-2 mb-2 flex items-center justify-between z-30 ${bgColorClass} ${
             snapshot.isDragging ? "opacity-75" : "opacity-100"
