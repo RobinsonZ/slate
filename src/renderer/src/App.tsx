@@ -180,7 +180,7 @@ function App(): JSX.Element {
           </header>
           <header
             className={classNames(
-              "fixed z-10 top-0 left-0 h-screen w-[250px] ps-6 bg-white pt-[6rem] ease-in-out transition-transform p-4 overflow-scroll drop-shadow",
+              "fixed z-10 top-0 left-0 h-screen w-[250px] ps-6 bg-white pt-[6rem] ease-in-out transition-transform p-4 overflow-scroll box-shadow",
               { "translate-x-[-250px]": !isImporting }
             )}
           >
