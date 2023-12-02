@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { TestContext } from "@renderer/context/context";
+import { TestContext, useSlateReducer } from "@renderer/context/context";
 import { createRef, useContext } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import ContentEditable from "react-contenteditable";
@@ -8,11 +8,14 @@ import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 export default function SlateCard(
   props: SlateFile & {
     index: number;
-    onInnerNameChange?: (id: string, newName: string) => void;
+    columnId: string;
+    allowEdit?: boolean
   }
 ) {
-  const { id, fileName, fileType, tags, index, onInnerNameChange, filePath } =
+  const { id, fileName, fileType, tags, index, filePath, columnId, allowEdit } =
     props;
+
+  const [data, dispatch] = useSlateReducer();
 
   const testMode = useContext(TestContext);
 
@@ -45,12 +48,18 @@ export default function SlateCard(
           {...provided.dragHandleProps}
         >
           <div className="flex flex-col justify-between w-full h-full">
-            {onInnerNameChange ? (
+            {allowEdit ? (
               <ContentEditable
                 className="self-start font-detail mb-1"
                 innerRef={ref}
                 html={fileName}
-                onChange={(e) => onInnerNameChange(id, e.target.value)}
+                onChange={(e) => dispatch({
+                  type: "modify_entry",
+                  targetType: "file",
+                  columnId: columnId,
+                  cardId: id,
+                  newValue: e.target.value
+                })}
                 tagName="h1"
               />
             ) : (
