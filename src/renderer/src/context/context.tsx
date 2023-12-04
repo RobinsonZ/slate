@@ -1,3 +1,5 @@
+import fakeCardData from "@renderer/util/fakeCardData";
+import { useElectronStore } from "@renderer/util/useElectronStore";
 import { Draft } from "immer";
 import {
   Dispatch,
@@ -5,13 +7,15 @@ import {
   Reducer,
   createContext,
   useContext,
+  useEffect,
   useReducer,
+  useState,
 } from "react";
 import { ImmerReducer, useImmerReducer } from "use-immer";
 
 export type TestMode = "doubleclick" | "button";
 
-export const TestContext = createContext<TestMode>("doubleclick");
+export const TestContext = createContext<TestMode>("button");
 
 type SlateAction =
   | {
@@ -169,13 +173,35 @@ export const SlateDataContext = createContext<FileDatabase>({
 
 export function SlateDataProvider(props: PropsWithChildren) {
   const { children } = props;
+  const KEY = "slate_cols";
+
   const [data, dispatch] = useImmerReducer<FileDatabase, SlateAction>(
     slateDataReducer,
     {
-      columns: [],
+      columns: window.electronStore.get(KEY) || [],
       importerFiles: [],
     }
   );
+
+  useEffect(() => {
+    const callback = window.electronStore.onDidAnyChange(
+      (_oldValue, newValue) => {
+        dispatch({
+          type: "set_columns",
+          newColumns: newValue[KEY] as SlateColumn[],
+        });
+      }
+    );
+    return () => {
+      window.electronStore.removeChangeListener(callback);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (data && data.columns) {
+      window.electronStore.set(KEY, data.columns);
+    }
+  }, [data]);
 
   return (
     <SlateDataContext.Provider value={data}>
