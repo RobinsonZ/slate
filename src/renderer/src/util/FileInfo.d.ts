@@ -21,4 +21,5 @@ interface SlateColumn {
 
 interface FileDatabase {
   columns: SlateColumn[];
+  importerFiles: SlateFile[];
 }

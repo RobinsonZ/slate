@@ -6,22 +6,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquareMinus } from "@fortawesome/free-regular-svg-icons";
 import { faSquarePlus } from "@fortawesome/free-regular-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
-import DatePicker from "react-date-picker";
 import ContentEditable from "react-contenteditable";
 import "react-date-picker/dist/DatePicker.css";
 import "react-calendar/dist/Calendar.css";
+import { useSlateReducer } from "@renderer/context/context";
+import { SlateDate } from "./SlateDate";
+import { v4 as uuidv4 } from "uuid";
 
-export default function SlateColumn(
-  props: SlateColumn & {
-    onNameChange: (newName: string) => void;
-    onInnerNameChange: (id: string, newName: string) => void;
-    addNewDate: () => void;
-  }
-) {
-  const { name, id, cards, onNameChange, onInnerNameChange, addNewDate } =
-    props;
+export default function SlateColumnView(props: SlateColumn) {
+  const { name, id, cards } = props;
+
+  const [data, dispatch] = useSlateReducer();
+
   const [collapsed, setCollapsed] = useState(false);
-  const [data, setData] = useElectronStore<FileDatabase>("cards");
 
   let index = 0;
 
@@ -31,11 +28,10 @@ export default function SlateColumn(
     );
 
     if (confirmDelete) {
-      const dataCopy = JSON.parse(JSON.stringify(data)) as FileDatabase;
-
-      dataCopy.columns = dataCopy.columns.filter((column) => column.id !== id);
-
-      setData(dataCopy);
+      dispatch({
+        type: "delete_column",
+        columnId: id,
+      });
     }
   };
   const titleEditRef = createRef<HTMLElement>();
@@ -47,7 +43,13 @@ export default function SlateColumn(
           className="font-sans font-semibold"
           innerRef={titleEditRef}
           html={name}
-          onChange={(e) => onNameChange(e.target.value)}
+          onChange={(e) =>
+            dispatch({
+              type: "rename_column",
+              columnId: id,
+              name: e.target.value,
+            })
+          }
           tagName="h1"
         />
         <div>
@@ -85,8 +87,8 @@ export default function SlateColumn(
                   {cards.map((item, index) => {
                     if (item.type == "day") {
                       return (
-                        <Draggable
-                          draggableId={item.id}
+                        <SlateDate
+                          columnId={id}
                           key={item.id}
                           index={index++}
                           isDragDisabled={true}
@@ -143,14 +145,17 @@ export default function SlateColumn(
                             );
                           }}
                         </Draggable>
+                          {...item}
+                        />
                       );
                     } else {
                       return (
                         <SlateCard
+                          columnId={id}
                           key={item.id}
                           index={index++}
                           {...item}
-                          onInnerNameChange={onInnerNameChange}
+                          allowEdit
                         />
                       );
                     }
@@ -163,9 +168,15 @@ export default function SlateColumn(
           <div
             className="cursor-pointer text-center"
             onClick={() => {
-              addNewDate();
-              requestAnimationFrame(() => {
-                console.log(lastRef);
+              dispatch({
+                type: "add_col_entry",
+                index: "end",
+                columnId: id,
+                newEntry: {
+                  type: "day",
+                  id: uuidv4(),
+                  day: new Date().toString(),
+                },
               });
             }}
           >

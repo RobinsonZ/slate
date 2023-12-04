@@ -3,15 +3,11 @@ import SlateCard from "./SlateCard";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import path from "path-browserify";
 import { v4 as uuidv4 } from "uuid";
+import { useSlateReducer } from "@renderer/context/context";
 
-interface SlateImporterProps {
-  data: FileDatabase;
-  importerFiles: SlateFile[];
-  setImporterFiles: Dispatch<SetStateAction<SlateColumn>>;
-}
+export default function SlateImporter() {
+  const [{ importerFiles }, dispatch] = useSlateReducer();
 
-export default function SlateImporter(props: SlateImporterProps) {
-  const { data, importerFiles, setImporterFiles } = props;
   const [openLocation, setOpenLocation] = useState<string>();
   let index = 0;
 
@@ -24,7 +20,7 @@ export default function SlateImporter(props: SlateImporterProps) {
   return (
     <>
       <h2 className="font-header text-xl mb-2">Import Files</h2>
-      {!openLocation && (
+      {importerFiles.length == 0 && (
         <button
           className="font-subheader text-lg p-1 w-full rounded bg-cardDefault"
           onClick={() =>
@@ -39,16 +35,16 @@ export default function SlateImporter(props: SlateImporterProps) {
                   type: "file",
                   tags: [],
                 }));
-                setImporterFiles((files) => ({
-                  ...files,
-                  cards: importFiles,
-                }));
+                dispatch({
+                  type: "set_imports",
+                  newImports: importFiles,
+                });
                 setOpenLocation(path.dirname(value[0]));
               } else {
-                setImporterFiles((files) => ({
-                  ...files,
-                  cards: [],
-                }));
+                dispatch({
+                  type: "set_imports",
+                  newImports: [],
+                });
                 setOpenLocation(undefined);
               }
             })
@@ -63,7 +59,12 @@ export default function SlateImporter(props: SlateImporterProps) {
             Importing from ../{path.basename(openLocation)}
           </p>
           <button
-          className="font-subheader text-md p-1 w-full rounded bg-cardDefault mb-2" onClick={() => setOpenLocation(undefined)}>
+            className="font-subheader text-md p-1 w-full rounded bg-cardDefault mb-2"
+            onClick={() => dispatch({
+              type: "set_imports",
+              newImports: [],
+            })}
+          >
             Change
           </button>
           <hr className="bg-black h-0.5 mb-2" />
@@ -72,7 +73,12 @@ export default function SlateImporter(props: SlateImporterProps) {
               <div ref={provided.innerRef} {...provided.droppableProps}>
                 <>
                   {importerFiles.map((item) => (
-                    <SlateCard key={item.id} index={index++} {...item} />
+                    <SlateCard
+                      columnId="_IMPORTER"
+                      key={item.id}
+                      index={index++}
+                      {...item}
+                    />
                   ))}
                 </>
                 {provided.placeholder}
