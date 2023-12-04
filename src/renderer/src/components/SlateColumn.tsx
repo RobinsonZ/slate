@@ -37,10 +37,10 @@ export default function SlateColumnView(props: SlateColumn) {
   const titleEditRef = createRef<HTMLElement>();
   let lastRef: RefObject<HTMLElement>;
   return (
-    <div className="bg-white shadow-lg hover:shadow-xl rounded break-after-column min-w-[300px] max-w-[300px] max-h-full overflow-y-scroll">
-      <div className="flex justify-between m-4 text-xl">
+    <div className="bg-slate-100 rounded break-after-column min-w-[250px] max-w-[250px] max-h-full overflow-y-scroll">
+      <div className="flex justify-between m-2 text-blue-500 text-xl">
         <ContentEditable
-          className="font-sans font-semibold"
+          className="font-header"
           innerRef={titleEditRef}
           html={name}
           onChange={(e) =>
@@ -76,7 +76,7 @@ export default function SlateColumnView(props: SlateColumn) {
         </div>
       </div>
 
-      {!collapsed && <hr className="font-sans h-0.5 mb-2" />}
+      {!collapsed && <hr className="bg-blue-500 h-0.5 mb-2" />}
 
       {!collapsed && (
         <div className="p-2">
@@ -91,60 +91,6 @@ export default function SlateColumnView(props: SlateColumn) {
                           columnId={id}
                           key={item.id}
                           index={index++}
-                          isDragDisabled={true}
-                        >
-                          {(provided, snapshot) => {
-                            const [dateEdit, setDateEdit] = useState(false);
-
-                            return (
-                              <div
-                                ref={provided.innerRef}
-                                className="min-h-[34px] mb-1"
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                              >
-                                {/* <ContentEditable
-                                  className="font-subheader text-lg italic mb-1 text-blue-500"
-                                  innerRef={innerEditRef}
-                                  html={item.day}
-                                  onChange={(e) =>
-                                    onInnerNameChange(item.id, e.target.value)
-                                  }
-                                  tagName="h1"
-                                /> */}
-                                {dateEdit ? (
-                                  <DatePicker
-                                    onChange={(newval) => {
-                                      setDateEdit(false);
-                                      onInnerNameChange(
-                                        item.id,
-                                        newval?.toString() || ""
-                                      );
-                                    }}
-                                    onCalendarClose={() => setDateEdit(false)}
-                                    value={item.day}
-                                    isOpen={true}
-                                  />
-                                ) : (
-                                  <h1
-                                    className="font-sans text-lg mb-1 cursor-pointer"
-                                    onClick={() => setDateEdit(true)}
-                                  >
-                                    {new Date(item.day).toLocaleString(
-                                      "en-US",
-                                      {
-                                        day: "2-digit",
-                                        month: "short",
-                                      }
-                                    )}
-                                  </h1>
-                                )}
-
-                                {/* <hr className="bg-blue-500 h-0.5 mb-2" /> */}
-                              </div>
-                            );
-                          }}
-                        </Draggable>
                           {...item}
                         />
                       );
@@ -166,7 +112,7 @@ export default function SlateColumnView(props: SlateColumn) {
             )}
           </Droppable>
           <div
-            className="cursor-pointer text-center"
+            className="cursor-pointer"
             onClick={() => {
               dispatch({
                 type: "add_col_entry",
@@ -180,10 +126,10 @@ export default function SlateColumnView(props: SlateColumn) {
               });
             }}
           >
-            <h1 className="font-sans m-2 text-gray-400 inline-block">
-              Add date
+            <h1 className="font-subheader italic mb-1 text-blue-500 inline-block">
+              Add date...
             </h1>
-            {/* <hr className="bg-blue-500 h-0.5 mb-2" /> */}
+            <hr className="bg-blue-500 h-0.5 mb-2" />
           </div>
         </div>
       )}
