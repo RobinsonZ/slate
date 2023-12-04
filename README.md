@@ -7,7 +7,7 @@
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
-A flexible document management interface for educators and learners.
+<i>A flexible file-based productivity interface.</i>
 
 [Features](#features) •
 [Installation](#installation) •
@@ -19,9 +19,9 @@ A flexible document management interface for educators and learners.
 
 ## Features
 
-- Integrates with existing filesystems, Google Drive, and Dropbox.
-- Drag-and-drop file organization and live preview.
-- Groups files by designated classes and types.
+- Organize files and folders according to usage date within dynamic groups.
+- Import integration with local filesystems, Google Drive, and Dropbox.
+- Drag-and-drop card organization and live preview.
 - Displays weekly and monthly explorer views.
 
 ## Installation
