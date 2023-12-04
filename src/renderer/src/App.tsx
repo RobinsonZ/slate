@@ -10,11 +10,12 @@ import { useState } from "react";
 import classNames from "classnames";
 import SlateImporter from "./components/SlateImporter";
 import { v4 as uuidv4 } from "uuid";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
-
 import { useKeyPress } from "react-use";
 import { TestContext, TestMode } from "./context/context";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
+import { faSquarePlus } from "@fortawesome/free-regular-svg-icons";
 
 function App(): JSX.Element {
   const [data, setData] = useElectronStore<FileDatabase>("cards");
@@ -104,7 +105,7 @@ function App(): JSX.Element {
         {
           type: "day",
           id: uuidv4(),
-          day: "sept 19 2023",
+          day: "dec 3 2023",
         },
         {
           type: "file",
@@ -126,7 +127,7 @@ function App(): JSX.Element {
   return (
     /* tailwind doesn't pick up classes in the index.html for some reason so I'm using bg-gray-500 here too,
     so that it'll get compiled into the built css */
-    <div className="bg-gray-500 max-h-full">
+    <div className="bg-[#f6f7fa] max-h-full">
       <DragDropContext
         onDragStart={() => setDragging(true)}
         onDragEnd={onDragEnd}
@@ -135,46 +136,54 @@ function App(): JSX.Element {
           <header className="bg-white shadow fixed w-screen z-20">
             {/* no overflow-x-scroll as this needs to be handled by the browser, see https://github.com/atlassian/react-beautiful-dnd/issues/131#issuecomment-1144736558*/}
             <div className="mx-auto py-6 px-8">
-              <h1 className="text-2xl font-bold tracking-tight text-gray-900 font-title">
-                Slate
-                <button
-                  className={classNames("inline mx-2 p-1 rounded text-xl", {
-                    "bg-blue-500": isImporting,
-                    "bg-blue-200": !isImporting,
-                  })}
-                  onClick={() => setImporting((importing) => !importing)}
-                >
-                  Import
-                </button>
-                <button
-                  className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
-                  onClick={addNewGroup}
-                >
-                  New Column
-                </button>
-                {showDev && (
+              <h1 className="flex justify-between text-2xl font-sans font-bold tracking-tight text-gray-900">
+                <div className="text-3xl">Slate</div>
+
+                <div>
                   <button
-                    className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
-                    onClick={() => setData(fakeCardData())}
-                  >
-                    reset cards
-                  </button>
-                )}
-                {showDev && (
-                  <button
-                    className={classNames("inline mx-2 p-1 rounded text-xl", {
-                      "bg-blue-500": testMode == "doubleclick",
-                      "bg-blue-200": testMode != "doubleclick",
+                    className={classNames("inline mx-4 p-1 rounded text-xl", {
+                      // "bg-blue-500": isImporting,
+                      // "bg-blue-200": !isImporting,
+                      "bg-gray-200": isImporting,
+                      "": !isImporting,
                     })}
-                    onClick={() =>
-                      setTestMode((mode) =>
-                        mode == "doubleclick" ? "button" : "doubleclick"
-                      )
-                    }
+                    onClick={() => setImporting((importing) => !importing)}
                   >
-                    Mode: {testMode}
+                    <FontAwesomeIcon className="mr-2" icon={faFolderOpen} />
+                    Import
                   </button>
-                )}
+                  <button
+                    className="inline mx-4 p-1 rounded text-xl"
+                    onClick={addNewGroup}
+                  >
+                    <FontAwesomeIcon className="mr-2" icon={faSquarePlus} />
+                    Create Column
+                  </button>
+                  {showDev && (
+                    <button
+                      className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
+                      onClick={() => setData(fakeCardData())}
+                    >
+                      reset cards
+                    </button>
+                  )}
+                  {showDev && (
+                    <button
+                      className={classNames("inline mx-2 p-1 rounded text-xl", {
+                        "bg-blue-500": testMode == "doubleclick",
+                        "bg-blue-200": testMode != "doubleclick",
+                      })}
+                      onClick={() =>
+                        setTestMode((mode) =>
+                          mode == "doubleclick" ? "button" : "doubleclick"
+                        )
+                      }
+                    >
+                      Mode: {testMode}
+                    </button>
+                  )}
+                </div>                
+                
               </h1>
             </div>
           </header>
@@ -196,7 +205,7 @@ function App(): JSX.Element {
             className={classNames("min-h-screen max-h-screen absolute pt-20")}
           >
             <div className="absolute top-0 left-0 mx-auto pt-24 px-8 h-[100vh] pb-6 max-h-full w-full">
-              <div className="fixed bottom-5 left-5 z-50">
+              <div className="fixed bottom-5 left-5">
                 <Droppable droppableId="_TRASH">
                   {(provider, snapshot) => (
                     <div

@@ -41,10 +41,10 @@ export default function SlateColumn(
   const titleEditRef = createRef<HTMLElement>();
   let lastRef: RefObject<HTMLElement>;
   return (
-    <div className="bg-slate-100 rounded break-after-column min-w-[250px] max-w-[250px] max-h-full overflow-y-scroll">
-      <div className="flex justify-between m-2 text-blue-500 text-xl">
+    <div className="bg-white shadow-lg hover:shadow-xl rounded break-after-column min-w-[300px] max-w-[300px] max-h-full overflow-y-scroll">
+      <div className="flex justify-between m-4 text-xl">
         <ContentEditable
-          className="font-header"
+          className="font-sans font-semibold"
           innerRef={titleEditRef}
           html={name}
           onChange={(e) => onNameChange(e.target.value)}
@@ -74,7 +74,7 @@ export default function SlateColumn(
         </div>
       </div>
 
-      {!collapsed && <hr className="bg-blue-500 h-0.5 mb-2" />}
+      {!collapsed && <hr className="font-sans h-0.5 mb-2" />}
 
       {!collapsed && (
         <div className="p-2">
@@ -97,7 +97,7 @@ export default function SlateColumn(
                             return (
                               <div
                                 ref={provided.innerRef}
-                                className="min-h-[34px] mb-2"
+                                className="min-h-[34px] mb-1"
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
                               >
@@ -125,7 +125,7 @@ export default function SlateColumn(
                                   />
                                 ) : (
                                   <h1
-                                    className="font-subheader text-lg italic mb-1 text-blue-500 cursor-pointer"
+                                    className="font-sans text-lg mb-1 cursor-pointer"
                                     onClick={() => setDateEdit(true)}
                                   >
                                     {new Date(item.day).toLocaleString(
@@ -138,7 +138,7 @@ export default function SlateColumn(
                                   </h1>
                                 )}
 
-                                <hr className="bg-blue-500 h-0.5 mb-2" />
+                                {/* <hr className="bg-blue-500 h-0.5 mb-2" /> */}
                               </div>
                             );
                           }}
@@ -161,7 +161,7 @@ export default function SlateColumn(
             )}
           </Droppable>
           <div
-            className="cursor-pointer"
+            className="cursor-pointer text-center"
             onClick={() => {
               addNewDate();
               requestAnimationFrame(() => {
@@ -169,10 +169,10 @@ export default function SlateColumn(
               });
             }}
           >
-            <h1 className="font-subheader italic mb-1 text-blue-500 inline-block">
-              Add date...
+            <h1 className="font-sans m-2 text-gray-400 inline-block">
+              Add date
             </h1>
-            <hr className="bg-blue-500 h-0.5 mb-2" />
+            {/* <hr className="bg-blue-500 h-0.5 mb-2" /> */}
           </div>
         </div>
       )}
