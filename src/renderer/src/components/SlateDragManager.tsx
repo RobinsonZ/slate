@@ -5,13 +5,13 @@ import {
 } from "@renderer/context/context";
 import fakeCardData from "@renderer/util/fakeCardData";
 import classNames from "classnames";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   DragDropContext,
   Droppable,
   OnDragEndResponder,
 } from "react-beautiful-dnd";
-import SlateColumnView from "./SlateColumn";
+import SlateColumnView from "./SlateColumnView";
 import SlateImporter from "./SlateImporter";
 import { useKeyPress } from "react-use";
 import { v4 as uuidv4 } from "uuid";

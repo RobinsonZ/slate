@@ -1,5 +1,5 @@
 import { Draggable, Droppable } from "react-beautiful-dnd";
-import { RefObject, createRef, useRef, useState } from "react";
+import { RefObject, createRef, useEffect, useRef, useState } from "react";
 import { useElectronStore } from "../util/useElectronStore";
 import SlateCard from "./SlateCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
