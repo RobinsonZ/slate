@@ -1,5 +1,3 @@
-import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   TestContext,
   TestMode,
@@ -17,6 +15,11 @@ import SlateColumnView from "./SlateColumn";
 import SlateImporter from "./SlateImporter";
 import { useKeyPress } from "react-use";
 import { v4 as uuidv4 } from "uuid";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
+import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
+import { faSquarePlus } from "@fortawesome/free-regular-svg-icons";
 
 export function SlateDragManager(props: {}) {
   const [dragging, setDragging] = useState(false);
@@ -79,75 +82,83 @@ export function SlateDragManager(props: {}) {
       onDragEnd={onDragEnd}
     >
       <TestContext.Provider value={testMode}>
-        <header className="bg-white shadow fixed w-screen z-20">
+        <header className="bg-[#f6f7fa] shadow fixed w-screen z-20">
           {/* no overflow-x-scroll as this needs to be handled by the browser, see https://github.com/atlassian/react-beautiful-dnd/issues/131#issuecomment-1144736558*/}
           <div className="mx-auto py-6 px-8">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 font-title">
-              Slate
-              <button
-                className={classNames("inline mx-2 p-1 rounded text-xl", {
-                  "bg-blue-500": isImporting,
-                  "bg-blue-200": !isImporting,
-                })}
-                onClick={() => {
-                  dispatch({
-                    type: "set_imports",
-                    newImports: [],
-                  });
-                  setImporting((importing) => !importing);
-                }}
-              >
-                Import
-              </button>
-              <button
-                className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
-                onClick={() =>
-                  dispatch({
-                    type: "add_col",
-                    newCol: {
-                      name: "New Column",
-                      id: uuidv4(),
-                      cards: [
-                        {
-                          type: "day",
-                          id: uuidv4(),
-                          day: new Date().toString(),
-                        },
-                      ],
-                    },
-                  })
-                }
-              >
-                New Column
-              </button>
-              {showDev && (
+            <h1 className="flex justify-between text-2xl font-sans font-bold tracking-tight text-gray-900">
+              <div className="text-3xl">Slate</div>
+
+              <div>
                 <button
-                  className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
+                  className={classNames("inline mx-4 p-1 rounded text-xl", {
+                    "bg-gray-200": isImporting,
+                    "": !isImporting,
+                  })}
+                  onClick={() => {
+                    dispatch({
+                      type: "set_imports",
+                      newImports: [],
+                    });
+                    setImporting((importing) => !importing);
+                  }}
+                >
+                  <FontAwesomeIcon className="mr-2" icon={faFolderOpen} />
+                  Import
+                </button>
+
+                <button
+                  className="inline mx-4 p-1 rounded text-xl"
                   onClick={() =>
                     dispatch({
-                      type: "set_columns",
-                      newColumns: fakeCardData(),
+                      type: "add_col",
+                      newCol: {
+                        name: "New Column",
+                        id: uuidv4(),
+                        cards: [
+                          {
+                            type: "day",
+                            id: uuidv4(),
+                            day: new Date().toString(),
+                          },
+                        ],
+                      },
                     })
                   }
                 >
-                  reset cards
+                  <FontAwesomeIcon className="mr-2" icon={faSquarePlus} />
+                  Create Column
                 </button>
-              )}
-              {showDev && (
-                <button
-                  className={classNames("inline mx-2 p-1 rounded text-xl", {
-                    "bg-blue-500": testMode == "doubleclick",
-                    "bg-blue-200": testMode != "doubleclick",
-                  })}
-                  onClick={() =>
-                    setTestMode((mode) =>
-                      mode == "doubleclick" ? "button" : "doubleclick"
-                    )
-                  }
-                >
-                  Mode: {testMode}
-                </button>
-              )}
+
+                {showDev && (
+                  <button
+                    className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
+                    onClick={() =>
+                      dispatch({
+                        type: "set_columns",
+                        newColumns: fakeCardData(),
+                      })
+                    }
+                  >
+                    reset cards
+                  </button>
+                )}
+
+                {showDev && (
+                  <button
+                    className={classNames("inline mx-2 p-1 rounded text-xl", {
+                      "bg-blue-500": testMode == "doubleclick",
+                      "bg-blue-200": testMode != "doubleclick",
+                    })}
+                    onClick={() =>
+                      setTestMode((mode) =>
+                        mode == "doubleclick" ? "button" : "doubleclick"
+                      )
+                    }
+                  >
+                    Mode: {testMode}
+                  </button>
+                )}
+              </div>
             </h1>
           </div>
         </header>

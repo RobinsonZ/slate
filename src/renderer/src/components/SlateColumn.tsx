@@ -37,10 +37,10 @@ export default function SlateColumnView(props: SlateColumn) {
   const titleEditRef = createRef<HTMLElement>();
   let lastRef: RefObject<HTMLElement>;
   return (
-    <div className="bg-slate-100 rounded break-after-column min-w-[250px] max-w-[250px] max-h-full overflow-y-scroll">
-      <div className="flex justify-between m-2 text-blue-500 text-xl">
+    <div className="bg-white shadow-lg hover:shadow-xl rounded break-after-column min-w-[300px] max-w-[300px] max-h-full overflow-y-scroll">
+      <div className="flex justify-between m-4 text-xl">
         <ContentEditable
-          className="font-header"
+          className="font-sans font-semibold"
           innerRef={titleEditRef}
           html={name}
           onChange={(e) =>
@@ -76,7 +76,7 @@ export default function SlateColumnView(props: SlateColumn) {
         </div>
       </div>
 
-      {!collapsed && <hr className="bg-blue-500 h-0.5 mb-2" />}
+      {!collapsed && <hr className="font-sans h-0.5 mb-2" />}
 
       {!collapsed && (
         <div className="p-2">
@@ -112,7 +112,7 @@ export default function SlateColumnView(props: SlateColumn) {
             )}
           </Droppable>
           <div
-            className="cursor-pointer"
+            className="cursor-pointer text-center"
             onClick={() => {
               dispatch({
                 type: "add_col_entry",
@@ -126,10 +126,9 @@ export default function SlateColumnView(props: SlateColumn) {
               });
             }}
           >
-            <h1 className="font-subheader italic mb-1 text-blue-500 inline-block">
+            <h1 className="font-sans m-2 text-gray-400 inline-block">
               Add date...
             </h1>
-            <hr className="bg-blue-500 h-0.5 mb-2" />
           </div>
         </div>
       )}
