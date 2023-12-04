@@ -15,7 +15,7 @@ import { ImmerReducer, useImmerReducer } from "use-immer";
 
 export type TestMode = "doubleclick" | "button";
 
-export const TestContext = createContext<TestMode>("doubleclick");
+export const TestContext = createContext<TestMode>("button");
 
 type SlateAction =
   | {
