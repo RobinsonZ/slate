@@ -5,7 +5,7 @@ function App(): JSX.Element {
   return (
     /* tailwind doesn't pick up classes in the index.html for some reason so I'm using bg-gray-500 here too,
     so that it'll get compiled into the built css */
-    <div className="bg-gray-500 max-h-full">
+    <div className="bg-[#f6f7fa] max-h-full">
       {/* this is its own component so it can consume the reducer context */}
       <SlateDataProvider>
         <SlateDragManager />

@@ -42,7 +42,7 @@ export function SlateDate(props: SlateDayHeader & SlateDateProps) {
               />
             ) : (
               <h1
-                className="font-subheader text-lg italic mb-1 text-blue-500 cursor-pointer"
+                className="font-sans text-lg mb-1 cursor-pointer"
                 onClick={() => setDateEdit(true)}
               >
                 {new Date(day).toLocaleString("en-US", {
@@ -52,7 +52,7 @@ export function SlateDate(props: SlateDayHeader & SlateDateProps) {
               </h1>
             )}
 
-            <hr className="bg-blue-500 h-0.5 mb-2" />
+            <hr className="h-0.5 mb-2" />
           </div>
         );
       }}
