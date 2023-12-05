@@ -24,7 +24,7 @@ type SlateAction =
     }
   | {
       type: "set_imports";
-      newImports: SlateFile[];
+      newImports: (SlateFile | SlateNote)[];
     }
   | {
       type: "remove_card";
@@ -114,9 +114,12 @@ const slateDataReducer: ImmerReducer<FileDatabase, SlateAction> = (
       return draft;
     }
     case "modify_entry": {
-      const col = draft.columns.find((col) => col.id == action.columnId);
-      if (col) {
-        const card = col.cards.find((card) => card.id === action.cardId);
+      const cards =
+        action.columnId === "_IMPORTER"
+          ? draft.importerFiles
+          : draft.columns.find((col) => col.id == action.columnId)?.cards;
+      if (cards) {
+        const card = cards.find((card) => card.id === action.cardId);
 
         if (!card || card.type !== action.targetType) {
           console.error(
