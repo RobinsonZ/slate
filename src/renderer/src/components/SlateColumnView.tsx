@@ -1,17 +1,16 @@
-import { Draggable, Droppable } from "react-beautiful-dnd";
+import { Droppable } from "react-beautiful-dnd";
 import { RefObject, createRef, useEffect, useRef, useState } from "react";
-import { useElectronStore } from "../util/useElectronStore";
 import SlateCard from "./SlateCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSquareMinus } from "@fortawesome/free-regular-svg-icons";
+import { faEdit, faSquareMinus } from "@fortawesome/free-regular-svg-icons";
 import { faSquarePlus } from "@fortawesome/free-regular-svg-icons";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
-import ContentEditable from "react-contenteditable";
 import "react-date-picker/dist/DatePicker.css";
 import "react-calendar/dist/Calendar.css";
 import { useSlateReducer } from "@renderer/context/context";
 import { SlateDate } from "./SlateDate";
 import { v4 as uuidv4 } from "uuid";
+import SlateEdiText from "./SlateEdiText";
 
 export default function SlateColumnView(props: SlateColumn) {
   const { name, id, cards } = props;
@@ -38,8 +37,43 @@ export default function SlateColumnView(props: SlateColumn) {
   let lastRef: RefObject<HTMLElement>;
   return (
     <div className="bg-white shadow-lg hover:shadow-xl rounded break-after-column min-w-[300px] max-w-[300px] max-h-full overflow-y-scroll">
-      <div className="flex justify-between m-4 text-xl">
-        <ContentEditable
+      <div className="flex justify-between m-4 ml-2 text-xl">
+        <SlateEdiText
+          className="font-sans font-semibold grow"
+          type="text"
+          onSave={(newval) => {
+            dispatch({
+              type: "rename_column",
+              columnId: id,
+              name: newval,
+            });
+          }}
+          inputProps={{
+            className:
+              "p-0.5 bg-transparent grow",
+          }}
+          viewProps={{
+            className: "self-start h-full p-0.5 w-full cursor-pointer",
+          }}
+          submitOnEnter
+          cancelButtonClassName="nothing"
+          cancelButtonContent={""}
+          saveButtonClassName="nothing"
+          saveButtonContent={""}
+          // editContainerClassName="flex flex-row"
+          editButtonContent={
+            <>edit&ensp;
+              <FontAwesomeIcon icon={faEdit} />
+            </>
+          }
+          editButtonClassName="rounded w-16 p-1.5 font-label text-sm text-black italic bg-opacity-50"
+          value={name}
+          showButtonsOnHover
+          renderValue={(value) => (
+            <h1>{value}</h1>
+          )}
+        />
+        {/* <ContentEditable
           className="font-sans font-semibold"
           innerRef={titleEditRef}
           html={name}
@@ -51,7 +85,7 @@ export default function SlateColumnView(props: SlateColumn) {
             })
           }
           tagName="h1"
-        />
+        /> */}
         <div>
           {!collapsed && (
             <FontAwesomeIcon

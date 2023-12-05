@@ -2,7 +2,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { TestContext, useSlateReducer } from "@renderer/context/context";
 import { ReactNode, createRef, useContext } from "react";
 import { Draggable } from "react-beautiful-dnd";
-import ContentEditable from "react-contenteditable";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
 import SlateEdiText from "./SlateEdiText";
 import Markdown from "react-markdown";

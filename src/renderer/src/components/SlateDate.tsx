@@ -65,11 +65,11 @@ export function SlateDate(props: SlateDayHeader & SlateDateProps) {
               editContainerClassName="flex flex-row"
               editButtonContent={
                 <>
-                  click to edit&ensp;
+                  edit&ensp;
                   <FontAwesomeIcon icon={faEdit} />
                 </>
               }
-              editButtonClassName="h-full w-28 rounded p-1.5 font-label text-sm text-black italic bg-opacity-50 self-end"
+              editButtonClassName="h-full w-28 text-end rounded p-1.5 font-label text-sm text-black italic bg-opacity-50 self-end"
               value={new Date(day).toISOString().substring(0, 10)}
               showButtonsOnHover
               renderValue={(value) => (
