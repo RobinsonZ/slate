@@ -15,15 +15,6 @@ export default function fakeCardData(): SlateColumn[] {
           text: "## stuff\n\nthis even supports `code`\n\nand [links](https://example.com)",
         },
         {
-          fileName: "2012-Volvo-XC60-Owners-Manual.pdf",
-          filePath:
-            "/Users/robinsonz/Documents/misc/2012-Volvo-XC60-Owners-Manual.pdf",
-          id: "53475213-3f16-4c76-a7fd-7b48b4078a6e",
-          fileType: "pdf",
-          type: "file",
-          tags: [],
-        },
-        {
           fileName: "Chemfig.pdf",
           filePath: "/Users/robinsonz/Documents/misc/Chemfig.pdf",
           id: "61d152eb-bfea-4589-9b49-047758d5e18c",
