@@ -4,8 +4,9 @@ import { ReactNode, createRef, useContext } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import ContentEditable from "react-contenteditable";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
-import SlateEdiText from "./SlateEditText";
+import SlateEdiText from "./SlateEdiText";
 import Markdown from "react-markdown";
+import { faEdit } from "@fortawesome/free-regular-svg-icons";
 
 export default function SlateCard(
   props: (SlateFile | SlateNote) & {
@@ -89,6 +90,28 @@ export default function SlateCard(
       <SlateEdiText
         value={text}
         type="textarea"
+        viewContainerClassName="flex flex-col items-end"
+        inputProps={{
+          className:
+            "block w-full h-full p-0.5 outline-none bg-transparent resize-none font-mono text-sm",
+          onFocus: (e: any) => {
+            // absolutely horrendous hack but hey it works
+            e.target.style.height = e.target.scrollHeight + "px";
+          },
+          onInput: (e: any) => {
+            // absolutely horrendous hack but hey it works
+            e.target.style.height = e.target.scrollHeight + "px";
+          },
+        }}
+        saveButtonClassName="rounded h-full p-1.5 font-label text-white italic bg-slate-500 bg-opacity-50 self-end mr-2"
+        cancelButtonClassName="rounded h-full p-1.5 font-label text-red-500 italic bg-slate-500 bg-opacity-50 self-end"
+        editButtonClassName="h-full rounded w-16 p-1.5 font-label text-sm text-white italic bg-slate-500 bg-opacity-50 self-end"
+        editButtonContent={
+          <>
+            <FontAwesomeIcon icon={faEdit} />
+            &nbsp;&nbsp;note
+          </>
+        }
         renderValue={(value) => (
           <Markdown
             className="prose"
