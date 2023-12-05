@@ -7,10 +7,17 @@ import { useSlateReducer } from "@renderer/context/context";
 import classNames from "classnames";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFolder } from "@fortawesome/free-regular-svg-icons";
-import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
-import { faNoteSticky } from "@fortawesome/free-regular-svg-icons";
-import { faFile } from "@fortawesome/free-regular-svg-icons";
+import {
+  faFolder,
+  faFolderOpen,
+  faNoteSticky,
+  faFile,
+  faEdit
+} from "@fortawesome/free-regular-svg-icons";
+
+import SlateEdiText from "./SlateEdiText";
+import Markdown from "react-markdown";
+import EdiText from "react-editext";
 
 export default function SlateImporter() {
   const [{ importerFiles }, dispatch] = useSlateReducer();
@@ -151,6 +158,26 @@ export default function SlateImporter() {
             )}
           </Droppable>
         </>
+      )}
+
+      {(createNote) && (
+        <Droppable droppableId={"_IMPORTER"} isDropDisabled={true}>
+          {(provided, snapshot) => (
+            <div ref={provided.innerRef} {...provided.droppableProps}>
+              <>
+                <SlateCard
+                  id={uuidv4()}
+                  columnId="_IMPORTER"
+                  index={index++}
+                  type="note"
+                  text="default text"
+                  allowEdit={createNote}
+                />
+              </>
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
       )}
     </>
   );

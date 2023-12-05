@@ -25,7 +25,7 @@ import { faNoteSticky } from "@fortawesome/free-regular-svg-icons";
 export function SlateDragManager(props: {}) {
   const [dragging, setDragging] = useState(false);
   const [isImporting, setImporting] = useState(false);
-  const [testMode, setTestMode] = useState<TestMode>("doubleclick");
+  const [testMode, setTestMode] = useState<TestMode>("button");
   const [showDev] = useKeyPress("Alt");
 
   const [data, dispatch] = useSlateReducer();
