@@ -176,6 +176,13 @@ export const SlateDataContext = createContext<FileDatabase>({
   importerFiles: [],
 });
 
+function scrubNulls(cols: SlateColumn[]) {
+  return cols.filter(c => c !== null).map(c => {
+    c.cards = c.cards.filter(card => card !== null);
+    return c
+  })
+}
+
 export function SlateDataProvider(props: PropsWithChildren) {
   const { children } = props;
   const KEY = "slate_cols";
@@ -183,7 +190,7 @@ export function SlateDataProvider(props: PropsWithChildren) {
   const [data, dispatch] = useImmerReducer<FileDatabase, SlateAction>(
     slateDataReducer,
     {
-      columns: window.electronStore.get(KEY) || [],
+      columns: scrubNulls(window.electronStore.get(KEY) || []),
       importerFiles: [],
     }
   );
@@ -194,7 +201,7 @@ export function SlateDataProvider(props: PropsWithChildren) {
         if (newValue[KEY]) {
           dispatch({
             type: "set_columns",
-            newColumns: newValue[KEY] as SlateColumn[],
+            newColumns: scrubNulls(newValue[KEY] as SlateColumn[]),
           });
         }
       }

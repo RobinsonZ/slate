@@ -184,26 +184,6 @@ export default function SlateImporter() {
           )}
         </Droppable>
       )}
-{/* 
-      {createNote && (
-        <Droppable droppableId={"_IMPORTER"} isDropDisabled={true}>
-          {(provided, snapshot) => (
-            <div ref={provided.innerRef} {...provided.droppableProps}>
-              <>
-                <SlateCard
-                  id={uuidv4()}
-                  columnId="_IMPORTER"
-                  index={index++}
-                  type="note"
-                  text="default text"
-                  allowEdit={createNote}
-                />
-              </>
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      )} */}
     </>
   );
 }
