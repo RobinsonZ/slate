@@ -12,10 +12,25 @@ module.exports = {
         title: ["Arvo", "serif"],
         header: ["Arvo", "serif"],
         subheader: ["Arvo", "serif"],
-        detail: ["Roboto", "sans"],
-        label: ["Roboto", "sans"],
+        detail: ["Roboto", "sans-serif"],
+        label: ["Roboto", "sans-serif"],
       },
+      typography: {
+        DEFAULT: {
+          css: {
+            fontFamily: "Roboto, sans-serif",
+            'code::before': {
+              content: '&nbsp;&nbsp;',
+            },
+            'code::after': {
+              content: '&nbsp;&nbsp;',
+            },
+          }
+        }
+      }
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 };

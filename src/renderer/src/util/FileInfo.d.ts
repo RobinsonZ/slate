@@ -13,10 +13,16 @@ interface SlateDayHeader {
   day: string;
 }
 
+interface SlateNote {
+  id: string;
+  type: "note";
+  text: string;
+}
+
 interface SlateColumn {
   name: string;
   id: string;
-  cards: (SlateDayHeader | SlateFile)[];
+  cards: (SlateDayHeader | SlateFile | SlateNote)[];
 }
 
 interface FileDatabase {
