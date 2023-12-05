@@ -1,19 +1,20 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { TestContext, useSlateReducer } from "@renderer/context/context";
-import { createRef, useContext } from "react";
+import { ReactNode, createRef, useContext } from "react";
 import { Draggable } from "react-beautiful-dnd";
 import ContentEditable from "react-contenteditable";
 import { faArrowUpRightFromSquare } from "@fortawesome/free-solid-svg-icons";
+import SlateEdiText from "./SlateEditText";
+import Markdown from "react-markdown";
 
 export default function SlateCard(
-  props: SlateFile & {
+  props: (SlateFile | SlateNote) & {
     index: number;
     columnId: string;
-    allowEdit?: boolean
+    allowEdit?: boolean;
   }
 ) {
-  const { id, fileName, fileType, tags, index, filePath, columnId, allowEdit } =
-    props;
+  const { id, index, columnId, allowEdit, type } = props;
 
   const [data, dispatch] = useSlateReducer();
 
@@ -21,19 +22,103 @@ export default function SlateCard(
 
   // SlateCard.tsx
   const bgColorClass =
-    fileType === "pdf"
-      ? "bg-cardPdf"
-      : fileType === "docx"
-      ? "bg-cardDocx"
+    type === "file"
+      ? props.fileType === "pdf"
+        ? "bg-cardPdf"
+        : props.fileType === "docx"
+        ? "bg-cardDocx"
+        : "bg-cardDefault"
       : "bg-cardDefault";
 
   const ref = createRef<HTMLElement>();
 
   const handleDoubleClick = () => {
-    if (testMode === "doubleclick") {
-      window.files.openExternally(filePath);
+    if (testMode === "doubleclick" && type == "file") {
+      window.files.openExternally(props.fileType);
     }
   };
+
+  let contents: ReactNode;
+
+  if (type == "file") {
+    const { fileName, fileType, tags, filePath } = props;
+
+    contents = (
+      <>
+        {allowEdit ? (
+          <ContentEditable
+            className="self-start font-detail mb-1"
+            innerRef={ref}
+            html={fileName}
+            onChange={(e) =>
+              dispatch({
+                type: "modify_entry",
+                targetType: "file",
+                columnId: columnId,
+                cardId: id,
+                newValue: e.target.value,
+              })
+            }
+            tagName="h1"
+          />
+        ) : (
+          <p className="self-start font-detail mb-1">{fileName}</p>
+        )}
+        {/* Spacer to push filetype to the bottom */}
+        <div className="flex-grow"></div>
+        <div className="flex flex-row">
+          <div className="flex-grow" />
+          {testMode == "button" ? (
+            <button
+              className="rounded w-16 p-1 font-label text-sm text-white italic bg-slate-500 bg-opacity-50"
+              onClick={() => window.files.openExternally(filePath)}
+            >
+              <FontAwesomeIcon icon={faArrowUpRightFromSquare} /> .{fileType}
+            </button>
+          ) : (
+            <div className="rounded p-1.5 font-label text-sm text-white italic bg-slate-500 bg-opacity-50">
+              <p>.{fileType}</p>
+            </div>
+          )}
+        </div>{" "}
+      </>
+    );
+  } else {
+    const { text } = props;
+    contents = (
+      <SlateEdiText
+        value={text}
+        type="textarea"
+        renderValue={(value) => (
+          <Markdown
+            className="prose"
+            // images are busted because I can't be bothered to figure out content security policy
+            disallowedElements={["img"]}
+            components={{
+              h1: "h2",
+              a: (props) => (
+                <a href={props.href} target="_blank" rel="noreferrer">
+                  {props.children}
+                </a>
+              ),
+            }}
+          >
+            {value}
+          </Markdown>
+        )}
+        hint="Try using Markdown!"
+        onSave={(newVal) =>
+          dispatch({
+            type: "modify_entry",
+            columnId: columnId,
+            cardId: id,
+            targetType: "note",
+            newValue: newVal,
+          })
+        }
+      />
+    );
+  }
 
   return (
     <Draggable draggableId={id} index={index}>
@@ -48,41 +133,7 @@ export default function SlateCard(
           {...provided.dragHandleProps}
         >
           <div className="flex flex-col justify-between w-full h-full">
-            {allowEdit ? (
-              <ContentEditable
-                className="self-start font-detail mb-1"
-                innerRef={ref}
-                html={fileName}
-                onChange={(e) => dispatch({
-                  type: "modify_entry",
-                  targetType: "file",
-                  columnId: columnId,
-                  cardId: id,
-                  newValue: e.target.value
-                })}
-                tagName="h1"
-              />
-            ) : (
-              <p className="self-start font-detail mb-1">{fileName}</p>
-            )}
-            {/* Spacer to push filetype to the bottom */}
-            <div className="flex-grow"></div>
-            <div className="flex flex-row">
-              <div className="flex-grow" />
-              {testMode == "button" ? (
-                <button
-                  className="rounded w-16 p-1 font-label text-sm text-white italic bg-slate-500 bg-opacity-50"
-                  onClick={() => window.files.openExternally(filePath)}
-                >
-                  <FontAwesomeIcon icon={faArrowUpRightFromSquare} /> .
-                  {fileType}
-                </button>
-              ) : (
-                <div className="rounded p-1.5 font-label text-sm text-white italic bg-slate-500 bg-opacity-50">
-                  <p>.{fileType}</p>
-                </div>
-              )}
-            </div>
+            {contents}
           </div>
         </div>
       )}

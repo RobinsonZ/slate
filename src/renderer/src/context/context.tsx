@@ -49,7 +49,7 @@ type SlateAction =
       type: "modify_entry";
       columnId: string;
       cardId: string;
-      targetType: "file" | "day";
+      targetType: "file" | "day" | "note";
       newValue: string;
     }
   | {
@@ -125,8 +125,10 @@ const slateDataReducer: ImmerReducer<FileDatabase, SlateAction> = (
         } else {
           if (card.type === "file") {
             card.fileName = action.newValue;
-          } else {
+          } else if (card.type === "day") {
             card.day = action.newValue;
+          } else {
+            card.text = action.newValue;
           }
         }
       } else {
@@ -186,10 +188,12 @@ export function SlateDataProvider(props: PropsWithChildren) {
   useEffect(() => {
     const callback = window.electronStore.onDidAnyChange(
       (_oldValue, newValue) => {
-        dispatch({
-          type: "set_columns",
-          newColumns: newValue[KEY] as SlateColumn[],
-        });
+        if (newValue[KEY]) {
+          dispatch({
+            type: "set_columns",
+            newColumns: newValue[KEY] as SlateColumn[],
+          });
+        }
       }
     );
     return () => {

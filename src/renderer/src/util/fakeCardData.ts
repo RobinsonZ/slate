@@ -10,6 +10,11 @@ export default function fakeCardData(): SlateColumn[] {
           day: "sept 19 2023",
         },
         {
+          id: "53475213-3f16-4c76-a7fd-7b48b4078a6e",
+          type: "note",
+          text: "## stuff\n\nthis even supports `code`\n\nand [links](https://example.com)",
+        },
+        {
           fileName: "2012-Volvo-XC60-Owners-Manual.pdf",
           filePath:
             "/Users/robinsonz/Documents/misc/2012-Volvo-XC60-Owners-Manual.pdf",
