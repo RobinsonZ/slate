@@ -20,6 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
 import { faSquarePlus } from "@fortawesome/free-regular-svg-icons";
+import { faNoteSticky } from "@fortawesome/free-regular-svg-icons";
 
 export function SlateDragManager(props: {}) {
   const [dragging, setDragging] = useState(false);
@@ -84,13 +85,13 @@ export function SlateDragManager(props: {}) {
       <TestContext.Provider value={testMode}>
         <header className="bg-[#f6f7fa] shadow fixed w-screen z-20">
           {/* no overflow-x-scroll as this needs to be handled by the browser, see https://github.com/atlassian/react-beautiful-dnd/issues/131#issuecomment-1144736558*/}
-          <div className="mx-auto py-6 px-8">
+          <div className="mx-auto py-4 px-8">
             <h1 className="flex justify-between text-2xl font-sans font-bold tracking-tight text-gray-900">
-              <div className="text-3xl">Slate</div>
+              <div className="text-3xl p-1">Slate</div>
 
               <div>
                 <button
-                  className={classNames("inline mx-4 p-1 rounded text-xl", {
+                  className={classNames("inline mx-4 p-1 px-2 rounded text-xl", {
                     "bg-gray-200": isImporting,
                     "": !isImporting,
                   })}
@@ -102,12 +103,12 @@ export function SlateDragManager(props: {}) {
                     setImporting((importing) => !importing);
                   }}
                 >
-                  <FontAwesomeIcon className="mr-2" icon={faFolderOpen} />
-                  Import
+                  <FontAwesomeIcon className="mr-2" icon={faNoteSticky} />
+                  New Card
                 </button>
 
                 <button
-                  className="inline mx-4 p-1 rounded text-xl"
+                  className="inline mx-4 py-2 rounded text-xl"
                   onClick={() =>
                     dispatch({
                       type: "add_col",
@@ -126,12 +127,12 @@ export function SlateDragManager(props: {}) {
                   }
                 >
                   <FontAwesomeIcon className="mr-2" icon={faSquarePlus} />
-                  Create Column
+                  New Column
                 </button>
 
                 {showDev && (
                   <button
-                    className="bg-blue-200 inline mx-2 p-1 rounded text-xl"
+                    className="bg-blue-200 inline mx-2 p-1 py-2 rounded text-xl"
                     onClick={() =>
                       dispatch({
                         type: "set_columns",
@@ -164,8 +165,8 @@ export function SlateDragManager(props: {}) {
         </header>
         <header
           className={classNames(
-            "fixed z-10 top-0 left-0 h-screen w-[250px] ps-6 bg-white pt-[6rem] ease-in-out transition-transform p-4 overflow-scroll box-shadow",
-            { "translate-x-[-250px]": !isImporting }
+            "fixed z-10 top-0 left-0 h-screen w-[350px] ps-4 bg-white pt-[6rem] ease-in-out transition-transform p-4 overflow-scroll box-shadow",
+            { "translate-x-[-350px]": !isImporting }
           )}
         >
           <SlateImporter />
@@ -200,7 +201,7 @@ export function SlateDragManager(props: {}) {
               className={classNames(
                 "relative top-0 h-full w-[200vw] columns-xs gap-4 flex items-start overflow-y-hidden select-none transition-[margin-left] ease-in-out",
                 {
-                  "ml-[235px]": isImporting,
+                  "ml-[335px]": isImporting,
                 }
               )}
             >
