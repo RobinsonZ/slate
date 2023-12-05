@@ -46,25 +46,7 @@ export default function SlateCard(
 
     contents = (
       <>
-        {allowEdit ? (
-          <ContentEditable
-            className="self-start font-detail mb-1"
-            innerRef={ref}
-            html={fileName}
-            onChange={(e) =>
-              dispatch({
-                type: "modify_entry",
-                targetType: "file",
-                columnId: columnId,
-                cardId: id,
-                newValue: e.target.value,
-              })
-            }
-            tagName="h1"
-          />
-        ) : (
-          <p className="self-start font-detail mb-1">{fileName}</p>
-        )}
+        <p className="self-start font-detail mb-1">{fileName}</p>
         {/* Spacer to push filetype to the bottom */}
         <div className="flex-grow"></div>
         <div className="flex flex-row">
