@@ -1,31 +1,34 @@
+
 interface SlateFile {
   id: string;
   type: "file";
   fileName: string;
   filePath: string;
   fileType: string;
+  startDate: string;
   tags: string[];
 }
 
-interface SlateDayHeader {
+export interface SlateDayHeader {
   id: string;
   type: "day";
-  day: string;
+  startDate: string;
 }
 
-interface SlateNote {
+export interface SlateNote {
   id: string;
   type: "note";
   text: string;
 }
 
-interface SlateColumn {
+export interface SlateColumn {
   name: string;
   id: string;
-  cards: (SlateDayHeader | SlateFile | SlateNote)[];
+  cards: (SlateDayHeader | SlateFile | SlateNote)[]; 
 }
 
-interface FileDatabase {
+export interface FileDatabase {
   columns: SlateColumn[];
   importerFiles: (SlateFile | SlateNote)[];
 }
+
