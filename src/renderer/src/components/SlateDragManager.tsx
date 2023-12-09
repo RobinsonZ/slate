@@ -5,7 +5,7 @@ import {
 } from "@renderer/context/context";
 import fakeCardData from "@renderer/util/fakeCardData";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -20,15 +20,33 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrashCan } from "@fortawesome/free-regular-svg-icons";
 import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
 import { faSquarePlus } from "@fortawesome/free-regular-svg-icons";
-import { faNoteSticky } from "@fortawesome/free-regular-svg-icons";
 
 export function SlateDragManager(props: {}) {
   const [dragging, setDragging] = useState(false);
   const [isImporting, setImporting] = useState(false);
   const [testMode, setTestMode] = useState<TestMode>("button");
   const [showDev] = useKeyPress("Alt");
-
   const [data, dispatch] = useSlateReducer();
+  const [calendarView, setCalendarView] = useState(false); // Initialize calendarView state to false
+
+  useEffect(() => {
+    console.log("Initial calendarView state:", calendarView);
+  }, []);
+
+
+  const toggleCalendarView = () => {
+    setCalendarView(!calendarView); // Function to toggle calendar view
+  };
+
+  // Use context to get columns data
+  const { columns } = useContext(SlateDataContext);
+
+  // Define events by mapping over columns and cards
+  const events = columns.flatMap(column =>
+    column.cards
+      .filter(card => card.type === "day" && card.startDate) 
+      .map(card => ({ start: new Date(card.startDate), id: card.id }))
+  );
 
   const onDragEnd: OnDragEndResponder = (val) => {
     setDragging(false);
@@ -61,7 +79,7 @@ export function SlateDragManager(props: {}) {
       } else {
         dispatch({
           type: "remove_card",
-          cardId: draggableId,
+          cardId: draggableId, 
           columnId: source.droppableId,
         });
       }
@@ -173,22 +191,27 @@ export function SlateDragManager(props: {}) {
         </header>
         {/* again, funny hack with the margins because we can't just have this be a child of an
  overarching thing containing the import screen */}
-        <main
-          className={classNames("min-h-screen max-h-screen absolute pt-20")}
-        >
+
+        {calendarView ? ( 
+        <FullCalendar
+          plugins={[dayGridPlugin]}
+          initialView='dayGridMonth'
+          weekends={true}
+          events={events} 
+        />
+        ) : (
+        <main className={classNames("min-h-screen max-h-screen absolute pt-20")}>
           <div className="absolute top-0 left-0 mx-auto pt-24 px-8 h-[100vh] pb-6 max-h-full w-full">
             <div className="fixed bottom-5 left-5 z-50">
               <Droppable droppableId="_TRASH">
                 {(provider, snapshot) => (
                   <div
-                    className={classNames(
-                      "inline mx-2 p-1 rounded text-3xl font-detail h-100",
+                    className={classNames("inline mx-2 p-1 rounded text-3xl font-detail h-100",
                       {
                         "opacity-0": !dragging,
                         "bg-red-200": !snapshot.isDraggingOver,
                         "bg-red-400": snapshot.isDraggingOver,
-                      }
-                    )}
+                      })}
                     ref={provider.innerRef}
                     {...provider.droppableProps}
                   >
@@ -201,7 +224,7 @@ export function SlateDragManager(props: {}) {
               className={classNames(
                 "relative top-0 h-full w-[200vw] columns-xs gap-4 flex items-start overflow-y-hidden select-none transition-[margin-left] ease-in-out",
                 {
-                  "ml-[335px]": isImporting,
+                  "ml-[235px]": isImporting,
                 }
               )}
             >
@@ -217,7 +240,11 @@ export function SlateDragManager(props: {}) {
             </div>
           </div>
         </main>
+        )}
       </TestContext.Provider>
     </DragDropContext>
   );
 }
+
+
+export default SlateDragManager
