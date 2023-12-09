@@ -176,7 +176,7 @@ export default function SlateImporter() {
                     key={item.id}
                     index={index++}
                     {...item}
-                  />
+                  /> 
                 ))}
               </>
               {provided.placeholder}
