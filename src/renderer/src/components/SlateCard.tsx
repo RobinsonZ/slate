@@ -95,7 +95,7 @@ export default function SlateCard(
         }
         renderValue={(value) => (
           <Markdown
-            className="prose"
+            className="prose prose-neutral prose-blue prose-p:text-black prose-li:text-black prose-li:marker:text-black"
             // images are busted because I can't be bothered to figure out content security policy
             disallowedElements={["img"]}
             components={{
