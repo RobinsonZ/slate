@@ -1,6 +1,7 @@
 import fakeCardData from "@renderer/util/fakeCardData";
 import { useElectronStore } from "@renderer/util/useElectronStore";
 import { Draft } from "immer";
+
 import {
   Dispatch,
   PropsWithChildren,
@@ -20,11 +21,11 @@ export const TestContext = createContext<TestMode>("button");
 type SlateAction =
   | {
       type: "set_columns";
-      newColumns: SlateColumn[];
+      newColumns: SlateColumn[]; 
     }
   | {
       type: "set_imports";
-      newImports: SlateFile[];
+      newImports: (SlateFile | SlateNote)[];
     }
   | {
       type: "remove_card";
@@ -43,7 +44,7 @@ type SlateAction =
       type: "add_col_entry";
       columnId: string;
       index: number | "end";
-      newEntry: SlateFile | SlateDayHeader;
+      newEntry: SlateFile | SlateDayHeader; 
     }
   | {
       type: "modify_entry";
@@ -52,6 +53,13 @@ type SlateAction =
       targetType: "file" | "day" | "note";
       newValue: string;
     }
+  |  {
+      type: "change_to_calendar";
+      columnId: string;
+      startDate: string;
+      //endDate: string;
+    }
+
   | {
       type: "rename_column";
       columnId: string;
@@ -61,6 +69,7 @@ type SlateAction =
       type: "delete_column";
       columnId: string;
     };
+
 
 const slateDataReducer: ImmerReducer<FileDatabase, SlateAction> = (
   draft: Draft<FileDatabase>,
@@ -98,6 +107,7 @@ const slateDataReducer: ImmerReducer<FileDatabase, SlateAction> = (
       draft.columns.push(action.newCol);
       return draft;
     }
+
     case "add_col_entry": {
       const addingCol = draft.columns.find((col) => col.id == action.columnId);
       if (addingCol) {
@@ -114,9 +124,12 @@ const slateDataReducer: ImmerReducer<FileDatabase, SlateAction> = (
       return draft;
     }
     case "modify_entry": {
-      const col = draft.columns.find((col) => col.id == action.columnId);
-      if (col) {
-        const card = col.cards.find((card) => card.id === action.cardId);
+      const cards =
+        action.columnId === "_IMPORTER"
+          ? draft.importerFiles
+          : draft.columns.find((col) => col.id == action.columnId)?.cards;
+      if (cards) {
+        const card = cards.find((card) => card.id === action.cardId);
 
         if (!card || card.type !== action.targetType) {
           console.error(
@@ -132,6 +145,29 @@ const slateDataReducer: ImmerReducer<FileDatabase, SlateAction> = (
           } else {
             card.text = action.newValue;
           }
+        }
+      } else {
+        console.error(
+          `tried to rename card in nonexistent column ${action.columnId}`
+        );
+      }
+      return draft;
+    }
+
+    case "change_to_calendar": {
+      const col = draft.columns.find((col) => col.id == action.columnId);
+      if (col) {
+        const card = col.cards.find((card) => card.id === action.columnId);
+
+        if (!card || card.type !== "day") {
+          console.error(
+            `Tried to change name of ${action.cardId} in ${action.columnId}, but that card doesn't exist or is the wrong type`
+          );
+        } else {
+          card.startDate = action.startDate;
+          card.endDate = action.endDate;
+          card.type = "calendar";
+
         }
       } else {
         console.error(
@@ -175,6 +211,13 @@ export const SlateDataContext = createContext<FileDatabase>({
   importerFiles: [],
 });
 
+function scrubNulls(cols: SlateColumn[]) {
+  return cols.filter(c => c !== null).map(c => {
+    c.cards = c.cards.filter(card => card !== null);
+    return c
+  })
+}
+
 export function SlateDataProvider(props: PropsWithChildren) {
   const { children } = props;
   const KEY = "slate_cols";
@@ -182,7 +225,7 @@ export function SlateDataProvider(props: PropsWithChildren) {
   const [data, dispatch] = useImmerReducer<FileDatabase, SlateAction>(
     slateDataReducer,
     {
-      columns: window.electronStore.get(KEY) || [],
+      columns: scrubNulls(window.electronStore.get(KEY) || []),
       importerFiles: [],
     }
   );
@@ -193,7 +236,7 @@ export function SlateDataProvider(props: PropsWithChildren) {
         if (newValue[KEY]) {
           dispatch({
             type: "set_columns",
-            newColumns: newValue[KEY] as SlateColumn[],
+            newColumns: scrubNulls(newValue[KEY] as SlateColumn[]),
           });
         }
       }
