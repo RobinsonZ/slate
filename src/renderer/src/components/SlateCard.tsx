@@ -14,7 +14,7 @@ export default function SlateCard(
     allowEdit?: boolean;
   }
 ) {
-  const { id, index, columnId, allowEdit, type } = props;
+  const { id, index, columnId, allowEdit, type, startDate } = props; 
 
   const [data, dispatch] = useSlateReducer();
 
@@ -24,6 +24,7 @@ export default function SlateCard(
   const bgColorClass =
     type === "file"
       ? props.fileType === "pdf"
+      
         ? "bg-cardPdf"
         : props.fileType === "docx"
         ? "bg-cardDocx"
@@ -41,7 +42,8 @@ export default function SlateCard(
   let contents: ReactNode;
 
   if (type == "file") {
-    const { fileName, fileType, tags, filePath } = props;
+    const { fileName, fileType, tags, filePath, id } = props;
+    const startDate = getStartDate(id); // Fetch startDate using getStartDate function
 
     contents = (
       <>
@@ -95,7 +97,7 @@ export default function SlateCard(
         }
         renderValue={(value) => (
           <Markdown
-            className="prose"
+            className="prose prose-neutral prose-blue prose-p:text-black prose-li:text-black prose-li:marker:text-black"
             // images are busted because I can't be bothered to figure out content security policy
             disallowedElements={["img"]}
             components={{
@@ -123,7 +125,6 @@ export default function SlateCard(
       />
     );
   }
-
   return (
     <Draggable draggableId={id} index={index}>
       {(provided, snapshot) => (
